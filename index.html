@@ -8,16 +8,21 @@
         body { font-family: 'Microsoft JhengHei', sans-serif; max-width: 900px; margin: 0 auto; padding: 20px; background: #f5f5f5; }
         .container { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 6px 30px rgba(0,0,0,0.1); }
         .header { text-align: center; margin-bottom: 30px; }
+        .date-row { display: flex; align-items: center; gap: 15px; margin-bottom: 10px; flex-wrap: wrap; }
+        .date-label { font-weight: bold; color: #1976d2; white-space: nowrap; font-size: 16px; }
+        .date-input { flex: 1; min-width: 200px; padding: 15px; font-size: 16px; border: 2px solid #ddd; border-radius: 8px; background: white; }
         .select-row { display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 20px; }
-        select, input[type="date"] { flex: 1; min-width: 140px; padding: 15px; font-size: 16px; border: 2px solid #ddd; border-radius: 8px; background: white; }
-        input[type="date"] { margin-bottom: 20px; }
+        select { flex: 1; min-width: 140px; padding: 15px; font-size: 16px; border: 2px solid #ddd; border-radius: 8px; background: white; }
         .result { background: linear-gradient(135deg, #4CAF50, #45a049); color: white; padding: 30px; border-radius: 15px; text-align: center; font-size: 28px; font-weight: bold; margin-top: 30px; display: none; }
-        .car-age-info { background: #e3f2fd; padding: 12px; border-radius: 8px; margin-bottom: 15px; font-size: 14px; color: #1976d2; display: none; }
+        .car-age-info { background: #e3f2fd; padding: 12px; border-radius: 8px; margin-bottom: 15px; font-size: 14px; color: #1976d2; display: none; border-left: 4px solid #1976d2; }
+        .error-info { background: #ffebee; padding: 12px; border-radius: 8px; margin-bottom: 15px; font-size: 14px; color: #c62828; display: none; border-left: 4px solid #f44336; }
         h1 { color: #1976d2; margin: 0 0 10px 0; }
         @media (max-width: 768px) { 
+            .date-row { flex-direction: column; align-items: stretch; }
+            .date-label { text-align: center; margin-bottom: 5px; }
             .select-row { flex-direction: column; }
             .result { font-size: 24px; }
-            select, input[type="date"] { font-size: 18px; }
+            select, .date-input { font-size: 18px; }
         }
     </style>
 </head>
@@ -27,9 +32,13 @@
             <h1>🛒安心保固價格查詢表</h1>
         </div>
         
-        <!-- 🚀 新增：領牌日期輸入 -->
-        <input type="date" id="licenseDate" placeholder="選擇領牌日期">
+        <!-- 🚀 優化：領牌日期 + 標籤 -->
+        <div class="date-row">
+            <div class="date-label">📅 領牌日期：</div>
+            <input type="date" id="licenseDate" class="date-input">
+        </div>
         <div id="carAgeInfo" class="car-age-info"></div>
+        <div id="errorInfo" class="error-info"></div>
         
         <div class="select-row">
             <select id="car">
@@ -114,12 +123,11 @@
                         '全方位二年': 35100,
                         '全方位三年': 46500
                     }
-                    // 無相關產品
                 }
             }
         };
 
-        // 🚀 新增：自動車齡計算函數
+        // 🚀 優化：自動車齡計算 + 36個月限制
         function calculateMonths() {
             const licenseDate = document.getElementById('licenseDate').value;
             if (!licenseDate) return '';
@@ -127,6 +135,15 @@
             const today = new Date();
             const license = new Date(licenseDate + 'T00:00:00');
             const months = Math.floor((today - license) / (1000 * 60 * 60 * 24 * 30.44));
+            
+            // 🚀 新增：36個月限制
+            if (months > 36) {
+                const errorInfo = document.getElementById('errorInfo');
+                errorInfo.textContent = `車齡 ${months}個月 超過36個月限制，無相關保固產品`;
+                errorInfo.style.display = 'block';
+                document.getElementById('carAgeInfo').style.display = 'none';
+                return null; // 明確返回 null 表示超過限制
+            }
             
             let ageRange = '';
             if (months <= 3) ageRange = '0-3';
@@ -138,6 +155,7 @@
             const carAgeInfo = document.getElementById('carAgeInfo');
             carAgeInfo.textContent = `計算車齡：${months}個月 → ${ageRange}個月區間`;
             carAgeInfo.style.display = 'block';
+            document.getElementById('errorInfo').style.display = 'none';
             
             return ageRange;
         }
@@ -145,9 +163,20 @@
         function updatePrice() {
             const car = document.getElementById('car').value;
             const customer = document.getElementById('customer').value;
-            // 🚀 自動車齡：有日期用計算，沒日期用下拉選單
             const licenseDate = document.getElementById('licenseDate').value;
-            const months = licenseDate ? calculateMonths() : document.getElementById('months').value;
+            let months;
+            
+            // 🚀 自動車齡邏輯
+            if (licenseDate) {
+                months = calculateMonths();
+                if (months === null) { // 超過36個月
+                    document.getElementById('result').style.display = 'none';
+                    return;
+                }
+            } else {
+                months = document.getElementById('months').value;
+            }
+            
             const type = document.getElementById('type').value;
             const years = document.getElementById('years').value;
             const result = document.getElementById('result');

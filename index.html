@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>安心保固價格查詢表</title>
+    <style>
+        body { font-family: 'Microsoft JhengHei', sans-serif; max-width: 900px; margin: 0 auto; padding: 20px; background: #f5f5f5; }
+        .container { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 6px 30px rgba(0,0,0,0.1); }
+        .header { text-align: center; margin-bottom: 30px; }
+        .select-row { display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 20px; }
+        select { flex: 1; min-width: 140px; padding: 15px; font-size: 16px; border: 2px solid #ddd; border-radius: 8px; background: white; }
+        .result { background: linear-gradient(135deg, #4CAF50, #45a049); color: white; padding: 30px; border-radius: 15px; text-align: center; font-size: 28px; font-weight: bold; margin-top: 30px; display: none; }
+        h1 { color: #1976d2; margin: 0 0 10px 0; }
+        @media (max-width: 768px) { 
+            .select-row { flex-direction: column; }
+            .result { font-size: 24px; }
+            select { font-size: 18px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔧 安心保固價格查詢表</h1>
+        </div>
+        
+        <div class="select-row">
+            <select id="car">
+                <option value="">選擇車型</option>
+                <option value="CX743">CX743</option>
+            </select>
+            
+            <select id="customer">
+                <option value="">顧客類別</option>
+                <option value="個人戶">個人戶</option>
+                <option value="非個人戶">非個人戶</option>
+            </select>
+            
+            <select id="months">
+                <option value="">車齡區間</option>
+                <option value="0-3">0-3個月</option>
+                <option value="4-12">4-12個月</option>
+                <option value="13-30">13-30個月</option>
+                <option value="31-36">31-36個月</option>
+            </select>
+            
+            <select id="type">
+                <option value="">產品類別</option>
+                <option value="加值型">加值型</option>
+                <option value="全方位">全方位</option>
+            </select>
+            
+            <select id="years">
+                <option value="">保固年限</option>
+                <option value="一年">一年</option>
+                <option value="二年">二年</option>
+                <option value="三年">三年</option>
+            </select>
+        </div>
+        
+        <div id="result" class="result">請選擇完整方案</div>
+    </div>
+
+    <script>
+        const prices = {
+            'CX743': {
+                '個人戶': {
+                    '0-3': {
+                        '加值型一年': 7100,
+                        '加值型二年': 10700, 
+                        '加值型三年': 14400,
+                        '全方位一年': 17200,
+                        '全方位二年': 29250,
+                        '全方位三年': 38800
+                    },
+                    '4-12': {
+                        '加值型一年': 7400,
+                        '加值型二年': 11200,
+                        '加值型三年': 15100,
+                        '全方位一年': 18100,
+                        '全方位二年': 30700,
+                        '全方位三年': 40700
+                    },
+                    '13-30': {
+                        '加值型一年': 7900,
+                        '加值型二年': 11800,
+                        '加值型三年': 15900,
+                        '全方位一年': 19000,
+                        '全方位二年': 32200,
+                        '全方位三年': 42700
+                    },
+                    '31-36': {
+                        '加值型一年': 9000,
+                        '加值型二年': 13100,
+                        '加值型三年': 17100,
+                        '全方位一年': 20000,
+                        '全方位二年': 32200,
+                        '全方位三年': 42700
+                    }
+                },
+                '非個人戶': {
+                    '0-3': {
+                        '加值型一年': 8500,
+                        '加值型二年': 12800,
+                        '加值型三年': 17300,
+                        '全方位一年': 20600,
+                        '全方位二年': 35100,
+                        '全方位三年': 46500
+                    }
+                    // 其他區間待補充
+                }
+            }
+        };
+
+        function updatePrice() {
+            const car = document.getElementById('car').value;
+            const customer = document.getElementById('customer').value;
+            const months = document.getElementById('months').value;
+            const type = document.getElementById('type').value;
+            const years = document.getElementById('years').value;
+            const result = document.getElementById('result');
+            
+            if (!car || !customer || !months || !type || !years) {
+                result.style.display = 'none';
+                return;
+            }
+            
+            const priceData = prices[car]?.[customer]?.[months];
+            const priceKey = `${type}${years}`;
+            const price = priceData?.[priceKey];
+            
+            if (price !== undefined) {
+                result.innerHTML = `
+                    <div>${car} | ${customer} | ${months}個月 | ${type} ${years}</div>
+                    <div style="font-size: 36px; margin-top: 10px;">NT$${price.toLocaleString()}</div>
+                `;
+                result.style.background = 'linear-gradient(135deg, #4CAF50, #45a049)';
+                result.style.display = 'block';
+            } else {
+                result.innerHTML = '<div style="font-size: 20px;">價格資料待補充</div>';
+                result.style.background = 'linear-gradient(135deg, #ff9800, #f57c00)';
+                result.style.display = 'block';
+            }
+        }
+
+        document.querySelectorAll('select').forEach(select => {
+            select.addEventListener('change', updatePrice);
+        });
+    </script>
+</body>
+</html>

@@ -32,7 +32,6 @@
             <h1>🛒安心保固價格查詢表</h1>
         </div>
         
-        <!-- 🚀 優化：領牌日期 + 標籤 -->
         <div class="date-row">
             <div class="date-label">📅 領牌日期：</div>
             <input type="date" id="licenseDate" class="date-input">
@@ -115,6 +114,7 @@
                     }
                 },
                 '非個人戶': {
+                    // 🚀 只保留30天內（0-3個月的前30天）
                     '0-3': {
                         '加值型一年': 8500,
                         '加值型二年': 12800,
@@ -123,11 +123,11 @@
                         '全方位二年': 35100,
                         '全方位三年': 46500
                     }
+                    // 4-12, 13-30, 31-36 完全移除
                 }
             }
         };
 
-        // 🚀 優化：自動車齡計算 + 36個月限制
         function calculateMonths() {
             const licenseDate = document.getElementById('licenseDate').value;
             if (!licenseDate) return '';
@@ -135,25 +135,41 @@
             const today = new Date();
             const license = new Date(licenseDate + 'T00:00:00');
             const months = Math.floor((today - license) / (1000 * 60 * 60 * 24 * 30.44));
+            const days = Math.floor((today - license) / (1000 * 60 * 60 * 24));
             
-            // 🚀 新增：36個月限制
+            // 🚀 36個月限制
             if (months > 36) {
                 const errorInfo = document.getElementById('errorInfo');
                 errorInfo.textContent = `車齡 ${months}個月 超過36個月限制，無相關保固產品`;
                 errorInfo.style.display = 'block';
                 document.getElementById('carAgeInfo').style.display = 'none';
-                return null; // 明確返回 null 表示超過限制
+                return null;
             }
             
+            // 🚀 非個人戶：只限30天內
             let ageRange = '';
             if (months <= 3) ageRange = '0-3';
             else if (months <= 12) ageRange = '4-12';
             else if (months <= 30) ageRange = '13-30';
             else ageRange = '31-36';
             
+            // 🚀 非個人戶30天限制檢查
+            const customer = document.getElementById('customer').value;
+            if (customer === '非個人戶' && days > 30) {
+                const errorInfo = document.getElementById('errorInfo');
+                errorInfo.textContent = `非個人戶僅限領牌30天內購買，目前車齡 ${days}天，已超過限制`;
+                errorInfo.style.display = 'block';
+                document.getElementById('carAgeInfo').style.display = 'none';
+                return null;
+            }
+            
             // 顯示車齡資訊
             const carAgeInfo = document.getElementById('carAgeInfo');
-            carAgeInfo.textContent = `計算車齡：${months}個月 → ${ageRange}個月區間`;
+            if (customer === '非個人戶') {
+                carAgeInfo.textContent = `計算車齡：${days}天（${months}個月）→ ${ageRange}個月區間 [非個人戶限30天內]`;
+            } else {
+                carAgeInfo.textContent = `計算車齡：${days}天（${months}個月）→ ${ageRange}個月區間`;
+            }
             carAgeInfo.style.display = 'block';
             document.getElementById('errorInfo').style.display = 'none';
             
@@ -166,10 +182,9 @@
             const licenseDate = document.getElementById('licenseDate').value;
             let months;
             
-            // 🚀 自動車齡邏輯
             if (licenseDate) {
                 months = calculateMonths();
-                if (months === null) { // 超過36個月
+                if (months === null) {
                     document.getElementById('result').style.display = 'none';
                     return;
                 }
@@ -204,7 +219,6 @@
             }
         }
 
-        // 監聽所有輸入變化
         document.querySelectorAll('select, input[type="date"]').forEach(el => {
             el.addEventListener('change', updatePrice);
         });

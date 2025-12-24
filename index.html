@@ -9,13 +9,15 @@
         .container { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 6px 30px rgba(0,0,0,0.1); }
         .header { text-align: center; margin-bottom: 30px; }
         .select-row { display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 20px; }
-        select { flex: 1; min-width: 140px; padding: 15px; font-size: 16px; border: 2px solid #ddd; border-radius: 8px; background: white; }
+        select, input[type="date"] { flex: 1; min-width: 140px; padding: 15px; font-size: 16px; border: 2px solid #ddd; border-radius: 8px; background: white; }
+        input[type="date"] { margin-bottom: 20px; }
         .result { background: linear-gradient(135deg, #4CAF50, #45a049); color: white; padding: 30px; border-radius: 15px; text-align: center; font-size: 28px; font-weight: bold; margin-top: 30px; display: none; }
+        .car-age-info { background: #e3f2fd; padding: 12px; border-radius: 8px; margin-bottom: 15px; font-size: 14px; color: #1976d2; display: none; }
         h1 { color: #1976d2; margin: 0 0 10px 0; }
         @media (max-width: 768px) { 
             .select-row { flex-direction: column; }
             .result { font-size: 24px; }
-            select { font-size: 18px; }
+            select, input[type="date"] { font-size: 18px; }
         }
     </style>
 </head>
@@ -24,6 +26,10 @@
         <div class="header">
             <h1>🛒安心保固價格查詢表</h1>
         </div>
+        
+        <!-- 🚀 新增：領牌日期輸入 -->
+        <input type="date" id="licenseDate" placeholder="選擇領牌日期">
+        <div id="carAgeInfo" class="car-age-info"></div>
         
         <div class="select-row">
             <select id="car">
@@ -113,10 +119,35 @@
             }
         };
 
+        // 🚀 新增：自動車齡計算函數
+        function calculateMonths() {
+            const licenseDate = document.getElementById('licenseDate').value;
+            if (!licenseDate) return '';
+            
+            const today = new Date();
+            const license = new Date(licenseDate + 'T00:00:00');
+            const months = Math.floor((today - license) / (1000 * 60 * 60 * 24 * 30.44));
+            
+            let ageRange = '';
+            if (months <= 3) ageRange = '0-3';
+            else if (months <= 12) ageRange = '4-12';
+            else if (months <= 30) ageRange = '13-30';
+            else ageRange = '31-36';
+            
+            // 顯示車齡資訊
+            const carAgeInfo = document.getElementById('carAgeInfo');
+            carAgeInfo.textContent = `計算車齡：${months}個月 → ${ageRange}個月區間`;
+            carAgeInfo.style.display = 'block';
+            
+            return ageRange;
+        }
+
         function updatePrice() {
             const car = document.getElementById('car').value;
             const customer = document.getElementById('customer').value;
-            const months = document.getElementById('months').value;
+            // 🚀 自動車齡：有日期用計算，沒日期用下拉選單
+            const licenseDate = document.getElementById('licenseDate').value;
+            const months = licenseDate ? calculateMonths() : document.getElementById('months').value;
             const type = document.getElementById('type').value;
             const years = document.getElementById('years').value;
             const result = document.getElementById('result');
@@ -144,8 +175,9 @@
             }
         }
 
-        document.querySelectorAll('select').forEach(select => {
-            select.addEventListener('change', updatePrice);
+        // 監聽所有輸入變化
+        document.querySelectorAll('select, input[type="date"]').forEach(el => {
+            el.addEventListener('change', updatePrice);
         });
     </script>
 </body>

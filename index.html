@@ -1,3 +1,8 @@
+已幫你直接塞進去，版面會長在結果區塊下方、字小一點、灰色，不會搶主視覺。
+​
+
+修改後完整程式碼
+xml
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
@@ -13,6 +18,7 @@
             --border-color: #ddd;
             --blue-color: #1976d2;
             --shadow-color: rgba(0,0,0,0.1);
+            --disclaimer-color: #666;
         }
         [data-theme="dark"] {
             --bg-color: #1a1a1a;
@@ -21,6 +27,7 @@
             --border-color: #444;
             --blue-color: #4fc3f7;
             --shadow-color: rgba(0,0,0,0.3);
+            --disclaimer-color: #9ca3af;
         }
 
         body { 
@@ -93,6 +100,14 @@
             border-left-color: #f87171; 
         }
         h1 { color: var(--blue-color); margin: 0 0 10px 0; font-size: 28px; }
+
+        /* 報價說明樣式 */
+        .disclaimer {
+            margin-top: 16px;
+            font-size: 12px;
+            line-height: 1.6;
+            color: var(--disclaimer-color);
+        }
         
         @media (max-width: 768px) { 
             .date-row { flex-direction: column; align-items: stretch; }
@@ -156,6 +171,11 @@
         </div>
         
         <div id="result" class="result">請選擇完整方案</div>
+
+        <!-- 報價說明文字區塊 -->
+        <div class="disclaimer">
+            【報價說明】 本平台資訊僅供參考，不具法律要約效力。所有報價均以福特六和官方通報為準，福特六和保留價格最終決定權與異動權。
+        </div>
     </div>
 
     <script>

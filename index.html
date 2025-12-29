@@ -1,3 +1,8 @@
+了解！上方完全獨立，下方只連動領牌日期，顯示更清楚的價格資訊。
+​
+
+🚀 修正版完整程式碼
+xml
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
@@ -22,11 +27,14 @@
         .date-label { font-weight: bold; color: var(--blue-color); white-space: nowrap; font-size: 16px; }
         .date-input { flex: 1; min-width: 200px; padding: 15px; font-size: 16px; border: 2px solid var(--border-color); border-radius: 8px; background: var(--card-bg); color: var(--text-color); }
         .select-row { display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 20px; }
-        select, input[type="radio"] { flex: 1; min-width: 140px; padding: 15px; font-size: 16px; border: 2px solid var(--border-color); border-radius: 8px; background: var(--card-bg); color: var(--text-color); transition: all 0.3s ease; }
+        select { flex: 1; min-width: 140px; padding: 15px; font-size: 16px; border: 2px solid var(--border-color); border-radius: 8px; background: var(--card-bg); color: var(--text-color); transition: all 0.3s ease; }
         select:focus { border-color: var(--blue-color); outline: none; box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.1); }
-        input[type="radio"] { width: auto; padding: 10px; margin: 5px; }
-        .radio-group { display: flex; gap: 10px; flex-wrap: wrap; }
-        .result, .addon-result { background: linear-gradient(135deg, #4CAF50, #45a049); color: white; padding: 30px; border-radius: 15px; text-align: center; font-size: 28px; font-weight: bold; margin-top: 30px; display: none; transition: all 0.3s ease; }
+        .radio-group { display: flex; gap: 15px; flex-wrap: wrap; align-items: center; }
+        input[type="radio"] { width: auto; padding: 10px; margin: 0; }
+        .radio-label { padding: 12px 20px; font-size: 16px; border: 2px solid var(--border-color); border-radius: 8px; background: var(--card-bg); color: var(--text-color); cursor: pointer; transition: all 0.3s ease; white-space: nowrap; }
+        .radio-label:hover { border-color: var(--blue-color); }
+        .radio-label input:checked + span { color: var(--blue-color); font-weight: bold; }
+        .result, .addon-result { background: linear-gradient(135deg, #4CAF50, #45a049); color: white; padding: 25px; border-radius: 15px; text-align: center; font-size: 24px; font-weight: bold; margin-top: 20px; display: none; transition: all 0.3s ease; }
         .section-title { color: var(--blue-color); font-size: 22px; font-weight: bold; margin: 40px 0 20px 0; border-bottom: 3px solid var(--blue-color); padding-bottom: 10px; }
         .addon-section { display: none; background: #f0f8ff; padding: 25px; border-radius: 12px; border-left: 5px solid var(--blue-color); margin-top: 30px; }
         .car-age-info, .error-info { background: #e3f2fd; padding: 12px; border-radius: 8px; margin-bottom: 15px; font-size: 14px; color: #1976d2; display: none; border-left: 4px solid #1976d2; }
@@ -36,7 +44,8 @@
         [data-theme="dark"] .addon-section { background: #1e3a5f; }
         h1 { color: var(--blue-color); margin: 0 0 10px 0; font-size: 28px; }
         .disclaimer { margin-top: 16px; font-size: 12px; line-height: 1.6; color: var(--disclaimer-color); }
-        @media (max-width: 768px) { .date-row, .select-row, .radio-group { flex-direction: column; } .result, .addon-result { font-size: 24px; } select, .date-input { font-size: 18px; } h1 { font-size: 24px; } .theme-toggle { top: 10px; right: 10px; padding: 6px 12px; font-size: 14px; } }
+        .price-display { font-size: 28px; font-weight: bold; color: var(--blue-color); margin-top: 10px; }
+        @media (max-width: 768px) { .date-row, .select-row, .radio-group { flex-direction: column; } .result, .addon-result { font-size: 20px; } select, .date-input { font-size: 18px; } h1 { font-size: 24px; } .theme-toggle { top: 10px; right: 10px; padding: 6px 12px; font-size: 14px; } .radio-label { text-align: center; } }
     </style>
 </head>
 <body>
@@ -47,7 +56,7 @@
             <h1>🛒安心保固價格查詢表</h1>
         </div>
 
-        <!-- 全新合約區塊 -->
+        <!-- 全新合約區塊（完全獨立） -->
         <div class="section-title">🆕 全新合約報價</div>
         <div class="date-row">
             <div class="date-label">📅 領牌日期：</div>
@@ -65,12 +74,12 @@
         </div>
         <div id="result" class="result">請選擇完整方案</div>
 
-        <!-- 加購升級區塊 -->
+        <!-- 加購升級區塊（只連動領牌日期） -->
         <div class="section-title">➕ 加購 / 升級報價</div>
         <div id="addonSection" class="addon-section">
             <div class="date-row">
                 <div class="date-label">📅 車齡：</div>
-                <div id="addonCarAge" style="flex:1; padding:15px; font-size:16px;"></div>
+                <div id="addonCarAge" style="flex:1; padding:15px; font-size:16px; color:var(--blue-color); font-weight:bold;"></div>
             </div>
             <div class="select-row">
                 <select id="originalContract">
@@ -83,11 +92,12 @@
                     <option value="全方位三年">全方位三年</option>
                 </select>
                 <div class="radio-group">
-                    <label><input type="radio" name="addonType" value="加購"> 加購</label>
-                    <label><input type="radio" name="addonType" value="升級"> 升級</label>
+                    <label class="radio-label"><input type="radio" name="addonType" value="加購"><span>加購</span></label>
+                    <label class="radio-label"><input type="radio" name="addonType" value="升級"><span>升級</span></label>
                 </div>
-                <select id="addonProduct"><option value="">選擇產品</option></select>
+                <select id="addonProduct"><option value="">可購買產品</option></select>
             </div>
+            <div id="addonPrice" class="price-display" style="display:none;">NT$0</div>
             <div id="addonResult" class="addon-result">請選擇完整方案</div>
         </div>
 
@@ -100,7 +110,7 @@
         // 主商品價格表
         const prices = {'CX743':{'個人戶':{'0-3':{'加值型一年':7100,'加值型二年':10700,'加值型三年':14400,'全方位一年':17200,'全方位二年':29250,'全方位三年':38800},'4-12':{'加值型一年':7400,'加值型二年':11200,'加值型三年':15100,'全方位一年':18100,'全方位二年':30700,'全方位三年':40700},'13-30':{'加值型一年':7900,'加值型二年':11800,'加值型三年':15900,'全方位一年':19000,'全方位二年':32200,'全方位三年':42700},'31-36':{'加值型一年':9000,'加值型二年':13100,'加值型三年':17100,'全方位一年':20000,'全方位二年':32200,'全方位三年':42700}},'非個人戶':{'0-3':{'加值型一年':8500,'加值型二年':12800,'加值型三年':17300,'全方位一年':20600,'全方位二年':35100,'全方位三年':46500}}}};
 
-        // 加購升級價格表 & 規則
+        // 加購升級規則 & 價格
         const addonRules = {
             '加值型一年': {'加購':['加值型一年','加值型二年'],'升級':['全方位一年','全方位二年','全方位三年']},
             '加值型二年': {'加購':['加值型一年'],'升級':['全方位二年','全方位三年']},
@@ -121,7 +131,7 @@
 
         let currentMonths = 0, currentDays = 0;
 
-        // 主題切換（保持原樣）
+        // 主題切換
         const themeToggle = document.getElementById('themeToggle'), body = document.body;
         if (localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
             body.setAttribute('data-theme', 'dark'); themeToggle.textContent = '☀️';
@@ -132,10 +142,13 @@
             localStorage.setItem('theme', body.hasAttribute('data-theme') ? 'dark' : 'light');
         });
 
-        // 計算車齡函式
+        // 計算車齡（兩區塊共用）
         function calculateMonths() {
             const licenseDate = document.getElementById('licenseDate').value;
-            if (!licenseDate) return '';
+            if (!licenseDate) {
+                document.getElementById('addonSection').style.display = 'none';
+                return '';
+            }
             const today = new Date(), license = new Date(licenseDate + 'T00:00:00');
             currentMonths = Math.floor((today - license) / (1000 * 60 * 60 * 24 * 30.44));
             currentDays = Math.floor((today - license) / (1000 * 60 * 60 * 24));
@@ -147,6 +160,8 @@
                 document.getElementById('addonSection').style.display = 'none';
                 return null;
             }
+
+            // 更新上方車齡顯示
             let ageRange = currentMonths <= 3 ? '0-3' : currentMonths <= 12 ? '4-12' : currentMonths <= 30 ? '13-30' : '31-36';
             const customer = document.getElementById('customer').value;
             if (customer === '非個人戶' && currentDays > 30) {
@@ -157,22 +172,17 @@
                 return null;
             }
             document.getElementById('carAgeInfo').textContent = customer === '非個人戶' ? 
-                `車齡：${currentDays}天（${currentMonths}個月）→ ${ageRange} [非個人戶限30天內]` :
-                `車齡：${currentDays}天（${currentMonths}個月）→ ${ageRange}`;
+                `車齡：${currentDays}天（${currentMonths}個月）→ ${ageRange} [非個人戶限30天內]` : `車齡：${currentDays}天（${currentMonths}個月）→ ${ageRange}`;
             document.getElementById('carAgeInfo').style.display = 'block';
             document.getElementById('errorInfo').style.display = 'none';
-            
-            // 控制加購升級區塊顯示
-            if (currentMonths <= 60 && customer === '個人戶') {
-                document.getElementById('addonSection').style.display = 'block';
-                document.getElementById('addonCarAge').textContent = `車齡 ${currentDays}天（${currentMonths}個月）`;
-            } else {
-                document.getElementById('addonSection').style.display = 'none';
-            }
+
+            // 更新下方車齡顯示 + 顯示區塊
+            document.getElementById('addonCarAge').textContent = `車齡 ${currentDays}天（${currentMonths}個月）`;
+            document.getElementById('addonSection').style.display = 'block';
             return ageRange;
         }
 
-        // 主商品報價
+        // 上方全新合約（完全獨立）
         function updatePrice() {
             const car = document.getElementById('car').value, customer = document.getElementById('customer').value;
             const licenseDate = document.getElementById('licenseDate').value, months = licenseDate ? calculateMonths() : document.getElementById('months').value;
@@ -181,7 +191,7 @@
             if (!car || !customer || !months || !type || !years) { result.style.display = 'none'; return; }
             const priceData = prices[car]?.[customer]?.[months], priceKey = `${type}${years}`, price = priceData?.[priceKey];
             if (price !== undefined) {
-                result.innerHTML = `<div>${car} | ${customer} | ${months}個月 | ${type}${years}</div><div style="font-size:36px;margin-top:10px;">NT$${price.toLocaleString()}</div>`;
+                result.innerHTML = `<div>${car} | ${customer} | ${months}個月 | ${type}${years}</div><div style="font-size:32px;margin-top:10px;">NT$${price.toLocaleString()}</div>`;
                 result.style.background = 'linear-gradient(135deg, #4CAF50, #45a049)';
             } else {
                 result.innerHTML = '<div style="font-size:20px;">無相關產品</div>';
@@ -190,14 +200,18 @@
             result.style.display = 'block';
         }
 
-        // 加購升級報價
+        // 下方加購升級
         function updateAddonPrice() {
             const original = document.getElementById('originalContract').value;
             const type = document.querySelector('input[name="addonType"]:checked')?.value;
             const product = document.getElementById('addonProduct').value;
+            const priceDisplay = document.getElementById('addonPrice');
             const result = document.getElementById('addonResult');
             
-            if (!original || !type || !product) { result.style.display = 'none'; return; }
+            priceDisplay.style.display = 'none';
+            result.style.display = 'none';
+
+            if (!original || !type || !product) return;
             
             const rules = addonRules[original];
             if (!rules || !rules[type]?.includes(product)) {
@@ -209,8 +223,7 @@
             
             let price = 0, priceKey = '';
             if (type === '加購') {
-                if (product.includes('全方位')) priceKey = product + '加購';
-                else priceKey = product;
+                priceKey = product.includes('全方位') ? product + '加購' : product;
                 const ageKey = currentMonths <= 36 ? '0-36' : '37-60';
                 price = addonPrices[priceKey]?.[ageKey];
             } else {
@@ -219,13 +232,16 @@
             }
             
             if (price) {
-                result.innerHTML = `<div>${original} → ${type} ${product}</div><div style="font-size:36px;margin-top:10px;">NT$${price.toLocaleString()}</div>`;
+                priceDisplay.textContent = `NT$${price.toLocaleString()}`;
+                priceDisplay.style.display = 'block';
+                result.innerHTML = `<div><strong>原始合約：</strong>${original}</div><div><strong>操作：</strong>${type} ${product}</div>`;
                 result.style.background = 'linear-gradient(135deg, #4CAF50, #45a049)';
+                result.style.display = 'block';
             } else {
                 result.innerHTML = '<div style="font-size:20px;">無相關價格</div>';
                 result.style.background = 'linear-gradient(135deg, #ff9800, #f57c00)';
+                result.style.display = 'block';
             }
-            result.style.display = 'block';
         }
 
         // 更新加購產品選項
@@ -234,7 +250,7 @@
             const type = document.querySelector('input[name="addonType"]:checked')?.value;
             const select = document.getElementById('addonProduct');
             
-            select.innerHTML = '<option value="">選擇產品</option>';
+            select.innerHTML = '<option value="">可購買產品</option>';
             if (original && type && addonRules[original]?.[type]) {
                 addonRules[original][type].forEach(p => {
                     const option = document.createElement('option');
@@ -243,12 +259,12 @@
                     select.appendChild(option);
                 });
             }
-            document.getElementById('addonResult').style.display = 'none';
         }
 
-        // 事件監聽
+        // 事件監聽（上方完全獨立）
         document.querySelectorAll('#car, #customer, #months, #type, #years, #licenseDate').forEach(el => el.addEventListener('change', updatePrice));
         document.querySelectorAll('#originalContract, input[name="addonType"], #addonProduct').forEach(el => el.addEventListener('change', () => { updateAddonOptions(); updateAddonPrice(); }));
+        document.getElementById('licenseDate').addEventListener('change', calculateMonths); // 只有領牌日期連動下方
     </script>
 </body>
 </html>

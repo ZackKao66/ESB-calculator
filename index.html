@@ -5,125 +5,50 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>安心保固價格查詢表</title>
     <style>
-        /* 🌙 深色模式變數 */
         :root {
-            --bg-color: #f5f5f5;
-            --card-bg: white;
-            --text-color: #333;
-            --border-color: #ddd;
-            --blue-color: #1976d2;
-            --shadow-color: rgba(0,0,0,0.1);
-            --disclaimer-color: #666;
+            --bg-color: #f5f5f5; --card-bg: white; --text-color: #333; --border-color: #ddd;
+            --blue-color: #1976d2; --shadow-color: rgba(0,0,0,0.1); --disclaimer-color: #666;
         }
         [data-theme="dark"] {
-            --bg-color: #1a1a1a;
-            --card-bg: #2d2d2d;
-            --text-color: #e0e0e0;
-            --border-color: #444;
-            --blue-color: #4fc3f7;
-            --shadow-color: rgba(0,0,0,0.3);
-            --disclaimer-color: #9ca3af;
+            --bg-color: #1a1a1a; --card-bg: #2d2d2d; --text-color: #e0e0e0; --border-color: #444;
+            --blue-color: #4fc3f7; --shadow-color: rgba(0,0,0,0.3); --disclaimer-color: #9ca3af;
         }
-
-        body { 
-            font-family: 'Microsoft JhengHei', sans-serif; 
-            max-width: 900px; 
-            margin: 0 auto; 
-            padding: 20px; 
-            background: var(--bg-color);
-            color: var(--text-color);
-            transition: all 0.3s ease;
-        }
-        .container { 
-            background: var(--card-bg); 
-            padding: 30px; 
-            border-radius: 15px; 
-            box-shadow: 0 6px 30px var(--shadow-color); 
-            transition: all 0.3s ease;
-        }
+        body { font-family: 'Microsoft JhengHei', sans-serif; max-width: 900px; margin: 0 auto; padding: 20px; background: var(--bg-color); color: var(--text-color); transition: all 0.3s ease; }
+        .container { background: var(--card-bg); padding: 30px; border-radius: 15px; box-shadow: 0 6px 30px var(--shadow-color); transition: all 0.3s ease; }
         .header { text-align: center; margin-bottom: 30px; }
-        .theme-toggle {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: var(--card-bg);
-            border: 2px solid var(--border-color);
-            border-radius: 50px;
-            padding: 8px 16px;
-            cursor: pointer;
-            font-size: 16px;
-            box-shadow: 0 4px 12px var(--shadow-color);
-            transition: all 0.3s ease;
-        }
-        .theme-toggle:hover {
-            transform: scale(1.05);
-            box-shadow: 0 6px 20px var(--shadow-color);
-        }
+        .theme-toggle { position: absolute; top: 20px; right: 20px; background: var(--card-bg); border: 2px solid var(--border-color); border-radius: 50px; padding: 8px 16px; cursor: pointer; font-size: 16px; box-shadow: 0 4px 12px var(--shadow-color); transition: all 0.3s ease; }
+        .theme-toggle:hover { transform: scale(1.05); box-shadow: 0 6px 20px var(--shadow-color); }
         .date-row { display: flex; align-items: center; gap: 15px; margin-bottom: 10px; flex-wrap: wrap; }
         .date-label { font-weight: bold; color: var(--blue-color); white-space: nowrap; font-size: 16px; }
         .date-input { flex: 1; min-width: 200px; padding: 15px; font-size: 16px; border: 2px solid var(--border-color); border-radius: 8px; background: var(--card-bg); color: var(--text-color); }
         .select-row { display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 20px; }
-        select { 
-            flex: 1; min-width: 140px; padding: 15px; font-size: 16px; 
-            border: 2px solid var(--border-color); border-radius: 8px; 
-            background: var(--card-bg); color: var(--text-color);
-            transition: all 0.3s ease;
-        }
+        select, input[type="radio"] { flex: 1; min-width: 140px; padding: 15px; font-size: 16px; border: 2px solid var(--border-color); border-radius: 8px; background: var(--card-bg); color: var(--text-color); transition: all 0.3s ease; }
         select:focus { border-color: var(--blue-color); outline: none; box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.1); }
-        .result { 
-            background: linear-gradient(135deg, #4CAF50, #45a049); 
-            color: white; padding: 30px; border-radius: 15px; 
-            text-align: center; font-size: 28px; font-weight: bold; 
-            margin-top: 30px; display: none; transition: all 0.3s ease;
-        }
-        .car-age-info { 
-            background: #e3f2fd; padding: 12px; border-radius: 8px; 
-            margin-bottom: 15px; font-size: 14px; color: #1976d2; 
-            display: none; border-left: 4px solid #1976d2; 
-        }
-        .error-info { 
-            background: #ffebee; padding: 12px; border-radius: 8px; 
-            margin-bottom: 15px; font-size: 14px; color: #c62828; 
-            display: none; border-left: 4px solid #f44336; 
-        }
-        [data-theme="dark"] .car-age-info { 
-            background: #1e3a5f; color: #93c5fd; 
-            border-left-color: #4fc3f7; 
-        }
-        [data-theme="dark"] .error-info { 
-            background: #7f1d1d; color: #fca5a5; 
-            border-left-color: #f87171; 
-        }
+        input[type="radio"] { width: auto; padding: 10px; margin: 5px; }
+        .radio-group { display: flex; gap: 10px; flex-wrap: wrap; }
+        .result, .addon-result { background: linear-gradient(135deg, #4CAF50, #45a049); color: white; padding: 30px; border-radius: 15px; text-align: center; font-size: 28px; font-weight: bold; margin-top: 30px; display: none; transition: all 0.3s ease; }
+        .section-title { color: var(--blue-color); font-size: 22px; font-weight: bold; margin: 40px 0 20px 0; border-bottom: 3px solid var(--blue-color); padding-bottom: 10px; }
+        .addon-section { display: none; background: #f0f8ff; padding: 25px; border-radius: 12px; border-left: 5px solid var(--blue-color); margin-top: 30px; }
+        .car-age-info, .error-info { background: #e3f2fd; padding: 12px; border-radius: 8px; margin-bottom: 15px; font-size: 14px; color: #1976d2; display: none; border-left: 4px solid #1976d2; }
+        .error-info { background: #ffebee; color: #c62828; border-left-color: #f44336; }
+        [data-theme="dark"] .car-age-info { background: #1e3a5f; color: #93c5fd; border-left-color: #4fc3f7; }
+        [data-theme="dark"] .error-info { background: #7f1d1d; color: #fca5a5; border-left-color: #f87171; }
+        [data-theme="dark"] .addon-section { background: #1e3a5f; }
         h1 { color: var(--blue-color); margin: 0 0 10px 0; font-size: 28px; }
-
-        /* 報價說明樣式 */
-        .disclaimer {
-            margin-top: 16px;
-            font-size: 12px;
-            line-height: 1.6;
-            color: var(--disclaimer-color);
-        }
-        
-        @media (max-width: 768px) { 
-            .date-row { flex-direction: column; align-items: stretch; }
-            .date-label { text-align: center; margin-bottom: 5px; }
-            .select-row { flex-direction: column; }
-            .result { font-size: 24px; }
-            select, .date-input { font-size: 18px; }
-            h1 { font-size: 24px; }
-            .theme-toggle { top: 10px; right: 10px; padding: 6px 12px; font-size: 14px; }
-        }
+        .disclaimer { margin-top: 16px; font-size: 12px; line-height: 1.6; color: var(--disclaimer-color); }
+        @media (max-width: 768px) { .date-row, .select-row, .radio-group { flex-direction: column; } .result, .addon-result { font-size: 24px; } select, .date-input { font-size: 18px; } h1 { font-size: 24px; } .theme-toggle { top: 10px; right: 10px; padding: 6px 12px; font-size: 14px; } }
     </style>
 </head>
 <body>
-    <!-- 🌙 主題切換按鈕 -->
     <button class="theme-toggle" id="themeToggle" title="切換主題">☀️</button>
     
     <div class="container">
         <div class="header">
             <h1>🛒安心保固價格查詢表</h1>
         </div>
-        
+
+        <!-- 全新合約區塊 -->
+        <div class="section-title">🆕 全新合約報價</div>
         <div class="date-row">
             <div class="date-label">📅 領牌日期：</div>
             <input type="date" id="licenseDate" class="date-input">
@@ -132,177 +57,198 @@
         <div id="errorInfo" class="error-info"></div>
         
         <div class="select-row">
-            <select id="car">
-                <option value="">選擇車型</option>
-                <option value="CX743">CX743</option>
-            </select>
-            
-            <select id="customer">
-                <option value="">顧客類別</option>
-                <option value="個人戶">個人戶</option>
-                <option value="非個人戶">非個人戶</option>
-            </select>
-            
-            <select id="months">
-                <option value="">車齡區間</option>
-                <option value="0-3">0-3個月</option>
-                <option value="4-12">4-12個月</option>
-                <option value="13-30">13-30個月</option>
-                <option value="31-36">31-36個月</option>
-            </select>
-            
-            <select id="type">
-                <option value="">產品類別</option>
-                <option value="加值型">加值型</option>
-                <option value="全方位">全方位</option>
-            </select>
-            
-            <select id="years">
-                <option value="">保固年限</option>
-                <option value="一年">一年</option>
-                <option value="二年">二年</option>
-                <option value="三年">三年</option>
-            </select>
+            <select id="car"><option value="">選擇車型</option><option value="CX743">CX743</option></select>
+            <select id="customer"><option value="">顧客類別</option><option value="個人戶">個人戶</option><option value="非個人戶">非個人戶</option></select>
+            <select id="months"><option value="">車齡區間</option><option value="0-3">0-3個月</option><option value="4-12">4-12個月</option><option value="13-30">13-30個月</option><option value="31-36">31-36個月</option></select>
+            <select id="type"><option value="">產品類別</option><option value="加值型">加值型</option><option value="全方位">全方位</option></select>
+            <select id="years"><option value="">保固年限</option><option value="一年">一年</option><option value="二年">二年</option><option value="三年">三年</option></select>
         </div>
-        
         <div id="result" class="result">請選擇完整方案</div>
 
-        <!-- 報價說明文字區塊 -->
+        <!-- 加購升級區塊 -->
+        <div class="section-title">➕ 加購 / 升級報價</div>
+        <div id="addonSection" class="addon-section">
+            <div class="date-row">
+                <div class="date-label">📅 車齡：</div>
+                <div id="addonCarAge" style="flex:1; padding:15px; font-size:16px;"></div>
+            </div>
+            <div class="select-row">
+                <select id="originalContract">
+                    <option value="">原始合約</option>
+                    <option value="加值型一年">加值型一年</option>
+                    <option value="加值型二年">加值型二年</option>
+                    <option value="加值型三年">加值型三年</option>
+                    <option value="全方位一年">全方位一年</option>
+                    <option value="全方位二年">全方位二年</option>
+                    <option value="全方位三年">全方位三年</option>
+                </select>
+                <div class="radio-group">
+                    <label><input type="radio" name="addonType" value="加購"> 加購</label>
+                    <label><input type="radio" name="addonType" value="升級"> 升級</label>
+                </div>
+                <select id="addonProduct"><option value="">選擇產品</option></select>
+            </div>
+            <div id="addonResult" class="addon-result">請選擇完整方案</div>
+        </div>
+
         <div class="disclaimer">
             【報價說明】 本平台資訊僅供參考，不具法律要約效力。所有報價均以福特六和官方通報為準，福特六和保留價格最終決定權與異動權。
         </div>
     </div>
 
     <script>
-        // 🌙 主題切換功能
-        const themeToggle = document.getElementById('themeToggle');
-        const body = document.body;
-        
-        // 檢查本地儲存的偏好設定
-        if (localStorage.getItem('theme') === 'dark' || 
-            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            body.setAttribute('data-theme', 'dark');
-            themeToggle.textContent = '☀️';
-        } else {
-            themeToggle.textContent = '🌙';
-        }
-        
-        themeToggle.addEventListener('click', () => {
-            if (body.getAttribute('data-theme') === 'dark') {
-                body.removeAttribute('data-theme');
-                themeToggle.textContent = '🌙';
-                localStorage.setItem('theme', 'light');
-            } else {
-                body.setAttribute('data-theme', 'dark');
-                themeToggle.textContent = '☀️';
-                localStorage.setItem('theme', 'dark');
-            }
-        });
+        // 主商品價格表
+        const prices = {'CX743':{'個人戶':{'0-3':{'加值型一年':7100,'加值型二年':10700,'加值型三年':14400,'全方位一年':17200,'全方位二年':29250,'全方位三年':38800},'4-12':{'加值型一年':7400,'加值型二年':11200,'加值型三年':15100,'全方位一年':18100,'全方位二年':30700,'全方位三年':40700},'13-30':{'加值型一年':7900,'加值型二年':11800,'加值型三年':15900,'全方位一年':19000,'全方位二年':32200,'全方位三年':42700},'31-36':{'加值型一年':9000,'加值型二年':13100,'加值型三年':17100,'全方位一年':20000,'全方位二年':32200,'全方位三年':42700}},'非個人戶':{'0-3':{'加值型一年':8500,'加值型二年':12800,'加值型三年':17300,'全方位一年':20600,'全方位二年':35100,'全方位三年':46500}}}};
 
-        const prices = {
-            'CX743': {
-                '個人戶': {
-                    '0-3': {'加值型一年': 7100,'加值型二年': 10700,'加值型三年': 14400,'全方位一年': 17200,'全方位二年': 29250,'全方位三年': 38800},
-                    '4-12': {'加值型一年': 7400,'加值型二年': 11200,'加值型三年': 15100,'全方位一年': 18100,'全方位二年': 30700,'全方位三年': 40700},
-                    '13-30': {'加值型一年': 7900,'加值型二年': 11800,'加值型三年': 15900,'全方位一年': 19000,'全方位二年': 32200,'全方位三年': 42700},
-                    '31-36': {'加值型一年': 9000,'加值型二年': 13100,'加值型三年': 17100,'全方位一年': 20000,'全方位二年': 32200,'全方位三年': 42700}
-                },
-                '非個人戶': {
-                    '0-3': {'加值型一年': 8500,'加值型二年': 12800,'加值型三年': 17300,'全方位一年': 20600,'全方位二年': 35100,'全方位三年': 46500}
-                }
-            }
+        // 加購升級價格表 & 規則
+        const addonRules = {
+            '加值型一年': {'加購':['加值型一年','加值型二年'],'升級':['全方位一年','全方位二年','全方位三年']},
+            '加值型二年': {'加購':['加值型一年'],'升級':['全方位二年','全方位三年']},
+            '加值型三年': {'升級':['全方位三年']},
+            '全方位一年': {'加購':['全方位一年','全方位二年']},
+            '全方位二年': {'加購':['全方位一年']},
+            '全方位三年': {'加購':[],'升級':[]}
+        };
+        const addonPrices = {
+            '加值型一年': {'0-36':6400,'37-60':7680},
+            '加值型二年': {'0-36':10000,'37-60':12000},
+            '全方位一年': {'升級':12900},
+            '全方位二年': {'升級':26700},
+            '全方位三年': {'升級':37700},
+            '全方位一年加購': {'0-36':15500,'37-60':18600},
+            '全方位二年加購': {'0-36':27600,'37-60':33120}
         };
 
+        let currentMonths = 0, currentDays = 0;
+
+        // 主題切換（保持原樣）
+        const themeToggle = document.getElementById('themeToggle'), body = document.body;
+        if (localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            body.setAttribute('data-theme', 'dark'); themeToggle.textContent = '☀️';
+        } else themeToggle.textContent = '🌙';
+        themeToggle.addEventListener('click', () => {
+            body.toggleAttribute('data-theme');
+            themeToggle.textContent = body.hasAttribute('data-theme') ? '☀️' : '🌙';
+            localStorage.setItem('theme', body.hasAttribute('data-theme') ? 'dark' : 'light');
+        });
+
+        // 計算車齡函式
         function calculateMonths() {
             const licenseDate = document.getElementById('licenseDate').value;
             if (!licenseDate) return '';
+            const today = new Date(), license = new Date(licenseDate + 'T00:00:00');
+            currentMonths = Math.floor((today - license) / (1000 * 60 * 60 * 24 * 30.44));
+            currentDays = Math.floor((today - license) / (1000 * 60 * 60 * 24));
             
-            const today = new Date();
-            const license = new Date(licenseDate + 'T00:00:00');
-            const months = Math.floor((today - license) / (1000 * 60 * 60 * 24 * 30.44));
-            const days = Math.floor((today - license) / (1000 * 60 * 60 * 24));
-            
-            if (months > 36) {
-                const errorInfo = document.getElementById('errorInfo');
-                errorInfo.textContent = `車齡 ${months}個月 超過36個月限制，無相關保固產品`;
-                errorInfo.style.display = 'block';
+            if (currentMonths > 60) {
+                document.getElementById('errorInfo').textContent = `車齡 ${currentMonths}個月 超過60個月限制`;
+                document.getElementById('errorInfo').style.display = 'block';
                 document.getElementById('carAgeInfo').style.display = 'none';
+                document.getElementById('addonSection').style.display = 'none';
                 return null;
             }
-            
-            let ageRange = '';
-            if (months <= 3) ageRange = '0-3';
-            else if (months <= 12) ageRange = '4-12';
-            else if (months <= 30) ageRange = '13-30';
-            else ageRange = '31-36';
-            
+            let ageRange = currentMonths <= 3 ? '0-3' : currentMonths <= 12 ? '4-12' : currentMonths <= 30 ? '13-30' : '31-36';
             const customer = document.getElementById('customer').value;
-            if (customer === '非個人戶' && days > 30) {
-                const errorInfo = document.getElementById('errorInfo');
-                errorInfo.textContent = `非個人戶僅限領牌30天內購買，目前車齡 ${days}天，已超過限制`;
-                errorInfo.style.display = 'block';
+            if (customer === '非個人戶' && currentDays > 30) {
+                document.getElementById('errorInfo').textContent = `非個人戶僅限領牌30天內購買，目前車齡 ${currentDays}天`;
+                document.getElementById('errorInfo').style.display = 'block';
                 document.getElementById('carAgeInfo').style.display = 'none';
+                document.getElementById('addonSection').style.display = 'none';
                 return null;
             }
-            
-            const carAgeInfo = document.getElementById('carAgeInfo');
-            if (customer === '非個人戶') {
-                carAgeInfo.textContent = `計算車齡：${days}天（${months}個月）→ ${ageRange}個月區間 [非個人戶限30天內]`;
-            } else {
-                carAgeInfo.textContent = `計算車齡：${days}天（${months}個月）→ ${ageRange}個月區間`;
-            }
-            carAgeInfo.style.display = 'block';
+            document.getElementById('carAgeInfo').textContent = customer === '非個人戶' ? 
+                `車齡：${currentDays}天（${currentMonths}個月）→ ${ageRange} [非個人戶限30天內]` :
+                `車齡：${currentDays}天（${currentMonths}個月）→ ${ageRange}`;
+            document.getElementById('carAgeInfo').style.display = 'block';
             document.getElementById('errorInfo').style.display = 'none';
             
+            // 控制加購升級區塊顯示
+            if (currentMonths <= 60 && customer === '個人戶') {
+                document.getElementById('addonSection').style.display = 'block';
+                document.getElementById('addonCarAge').textContent = `車齡 ${currentDays}天（${currentMonths}個月）`;
+            } else {
+                document.getElementById('addonSection').style.display = 'none';
+            }
             return ageRange;
         }
 
+        // 主商品報價
         function updatePrice() {
-            const car = document.getElementById('car').value;
-            const customer = document.getElementById('customer').value;
-            const licenseDate = document.getElementById('licenseDate').value;
-            let months;
-            
-            if (licenseDate) {
-                months = calculateMonths();
-                if (months === null) {
-                    document.getElementById('result').style.display = 'none';
-                    return;
-                }
+            const car = document.getElementById('car').value, customer = document.getElementById('customer').value;
+            const licenseDate = document.getElementById('licenseDate').value, months = licenseDate ? calculateMonths() : document.getElementById('months').value;
+            if (licenseDate && months === null) { document.getElementById('result').style.display = 'none'; return; }
+            const type = document.getElementById('type').value, years = document.getElementById('years').value, result = document.getElementById('result');
+            if (!car || !customer || !months || !type || !years) { result.style.display = 'none'; return; }
+            const priceData = prices[car]?.[customer]?.[months], priceKey = `${type}${years}`, price = priceData?.[priceKey];
+            if (price !== undefined) {
+                result.innerHTML = `<div>${car} | ${customer} | ${months}個月 | ${type}${years}</div><div style="font-size:36px;margin-top:10px;">NT$${price.toLocaleString()}</div>`;
+                result.style.background = 'linear-gradient(135deg, #4CAF50, #45a049)';
             } else {
-                months = document.getElementById('months').value;
+                result.innerHTML = '<div style="font-size:20px;">無相關產品</div>';
+                result.style.background = 'linear-gradient(135deg, #ff9800, #f57c00)';
             }
+            result.style.display = 'block';
+        }
+
+        // 加購升級報價
+        function updateAddonPrice() {
+            const original = document.getElementById('originalContract').value;
+            const type = document.querySelector('input[name="addonType"]:checked')?.value;
+            const product = document.getElementById('addonProduct').value;
+            const result = document.getElementById('addonResult');
             
-            const type = document.getElementById('type').value;
-            const years = document.getElementById('years').value;
-            const result = document.getElementById('result');
+            if (!original || !type || !product) { result.style.display = 'none'; return; }
             
-            if (!car || !customer || !months || !type || !years) {
-                result.style.display = 'none';
+            const rules = addonRules[original];
+            if (!rules || !rules[type]?.includes(product)) {
+                result.innerHTML = '<div style="font-size:20px;">無相關產品</div>';
+                result.style.background = 'linear-gradient(135deg, #ff9800, #f57c00)';
+                result.style.display = 'block';
                 return;
             }
             
-            const priceData = prices[car]?.[customer]?.[months];
-            const priceKey = `${type}${years}`;
-            const price = priceData?.[priceKey];
-            
-            if (price !== undefined) {
-                result.innerHTML = `
-                    <div>${car} | ${customer} | ${months}個月 | ${type}${years}</div>
-                    <div style="font-size: 36px; margin-top: 10px;">NT$${price.toLocaleString()}</div>
-                `;
-                result.style.background = 'linear-gradient(135deg, #4CAF50, #45a049)';
-                result.style.display = 'block';
+            let price = 0, priceKey = '';
+            if (type === '加購') {
+                if (product.includes('全方位')) priceKey = product + '加購';
+                else priceKey = product;
+                const ageKey = currentMonths <= 36 ? '0-36' : '37-60';
+                price = addonPrices[priceKey]?.[ageKey];
             } else {
-                result.innerHTML = '<div style="font-size: 20px;">無相關產品</div>';
-                result.style.background = 'linear-gradient(135deg, #ff9800, #f57c00)';
-                result.style.display = 'block';
+                priceKey = product;
+                price = addonPrices[priceKey]?.['升級'];
             }
+            
+            if (price) {
+                result.innerHTML = `<div>${original} → ${type} ${product}</div><div style="font-size:36px;margin-top:10px;">NT$${price.toLocaleString()}</div>`;
+                result.style.background = 'linear-gradient(135deg, #4CAF50, #45a049)';
+            } else {
+                result.innerHTML = '<div style="font-size:20px;">無相關價格</div>';
+                result.style.background = 'linear-gradient(135deg, #ff9800, #f57c00)';
+            }
+            result.style.display = 'block';
         }
 
-        document.querySelectorAll('select, input[type="date"]').forEach(el => {
-            el.addEventListener('change', updatePrice);
-        });
+        // 更新加購產品選項
+        function updateAddonOptions() {
+            const original = document.getElementById('originalContract').value;
+            const type = document.querySelector('input[name="addonType"]:checked')?.value;
+            const select = document.getElementById('addonProduct');
+            
+            select.innerHTML = '<option value="">選擇產品</option>';
+            if (original && type && addonRules[original]?.[type]) {
+                addonRules[original][type].forEach(p => {
+                    const option = document.createElement('option');
+                    option.value = p;
+                    option.textContent = p;
+                    select.appendChild(option);
+                });
+            }
+            document.getElementById('addonResult').style.display = 'none';
+        }
+
+        // 事件監聽
+        document.querySelectorAll('#car, #customer, #months, #type, #years, #licenseDate').forEach(el => el.addEventListener('change', updatePrice));
+        document.querySelectorAll('#originalContract, input[name="addonType"], #addonProduct').forEach(el => el.addEventListener('change', () => { updateAddonOptions(); updateAddonPrice(); }));
     </script>
 </body>
 </html>

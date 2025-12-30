@@ -92,6 +92,10 @@ color: white;
 background: linear-gradient(135deg, #f44336, #d32f2f);
 color: white;
 }
+.upgrade-result.warning {
+background: linear-gradient(135deg, var(--upgrade-orange), #ff9800);
+color: white;
+}
 .section-divider {
 height: 2px; background: linear-gradient(90deg, var(--blue-color), transparent);
 margin: 40px 0; border-radius: 2px;
@@ -121,6 +125,11 @@ background: #f0f8e8; padding: 15px; border-radius: 8px;
 margin-bottom: 20px; font-size: 13px; line-height: 1.6;
 border-left: 4px solid var(--upgrade-green);
 }
+.upgrade-age-info {
+background: #fff3e0; padding: 12px; border-radius: 8px;
+margin-bottom: 15px; font-size: 14px; color: #ef6c00;
+border-left: 4px solid var(--upgrade-orange);
+}
 [data-theme="dark"] .car-age-info {
 background: #1e3a5f; color: #93c5fd;
 border-left-color: #4fc3f7;
@@ -132,6 +141,10 @@ border-left-color: #f87171;
 [data-theme="dark"] .upgrade-conditions {
 background: #1b5e20; color: #c8e6c9;
 border-left-color: #66bb6a;
+}
+[data-theme="dark"] .upgrade-age-info {
+background: #5f3d1a; color: #ffd699;
+border-left-color: #ff9800;
 }
 h1 { color: var(--blue-color); margin: 0 0 10px 0; font-size: 28px; }
 .disclaimer {
@@ -212,9 +225,12 @@ h1 { font-size: 24px; }
 <!-- 加購條件說明 -->
 <div class="upgrade-conditions">
 <strong>📋 加購/升級條件：</strong><br>
-• 僅限<strong>個人戶</strong> • 最大上限<strong>36個月</strong><br>
-• 依據<strong>原始合約</strong>決定可加購/升級項目
+• 僅限<strong>個人戶</strong> • 加購：0-60個月 • 升級：0-36個月<br>
+• <strong>必須選擇原始合約</strong>才能加購/升級
 </div>
+
+<!-- 🔥 加購專用車齡顯示 -->
+<div id="upgradeAgeInfo" class="upgrade-age-info" style="display: none;"></div>
 
 <!-- 下方加購/升級查詢 -->
 <div class="select-row">
@@ -305,7 +321,7 @@ const prices = {
 }
 };
 
-// 🔥 新增購/升級價格（依原始合約邏輯）
+// 🔥 更新加購/升級規則（包含第15條）
 const upgradeRules = {
 '加值型一年': {
   '加購加值型一年': { price: 6400, result: '加值型二年(24個月)' },
@@ -319,7 +335,9 @@ const upgradeRules = {
   '升級全方位二年': { price: 26700, result: '全方位二年(24個月)' },
   '升級全方位三年': { price: 37700, result: '全方位三年(36個月)' }
 },
-'加值型三年': {},
+'加值型三年': {
+  '升級全方位三年': { price: 37700, result: '全方位三年(36個月)' }  // 🔥 第15條
+},
 '全方位一年': {
   '加購全方位一年': { price: 15500, result: '全方位二年(24個月)' },
   '加購全方位二年': { price: 27600, result: '全方位三年(36個月)' }
@@ -330,16 +348,37 @@ const upgradeRules = {
 '全方位三年': {}
 };
 
-// 檢查車齡是否超過36個月
-function checkCarAgeLimit() {
+// 🔥 計算車齡並顯示加購/升級資訊
+function calculateUpgradeAge() {
 const licenseDate = document.getElementById('licenseDate').value;
-if (!licenseDate) return true;
+if (!licenseDate) {
+document.getElementById('upgradeAgeInfo').style.display = 'none';
+return null;
+}
 
 const today = new Date();
 const license = new Date(licenseDate + 'T00:00:00');
 const months = Math.floor((today - license) / (1000 * 60 * 60 * 24 * 30.44));
+const days = Math.floor((today - license) / (1000 * 60 * 60 * 24));
 
-return months <= 36;
+const upgradeAgeInfo = document.getElementById('upgradeAgeInfo');
+let status = '';
+
+if (months > 60) {
+status = `❌ 車齡 ${months}個月 超過加購60個月限制`;
+upgradeAgeInfo.className = 'upgrade-age-info error';
+} else if (months > 36) {
+status = `⚠️ 車齡 ${months}個月 僅限加購（升級限36個月內）`;
+upgradeAgeInfo.className = 'upgrade-age-info warning';
+} else {
+status = `✅ 車齡 ${months}個月 可加購/升級`;
+upgradeAgeInfo.className = 'upgrade-age-info';
+}
+
+upgradeAgeInfo.innerHTML = `目前車齡：${days}天（${months}個月）→ ${status}`;
+upgradeAgeInfo.style.display = 'block';
+
+return months;
 }
 
 function calculateMonths() {
@@ -353,7 +392,7 @@ const days = Math.floor((today - license) / (1000 * 60 * 60 * 24));
 
 if (months > 36) {
 const errorInfo = document.getElementById('errorInfo');
-errorInfo.textContent = `車齡 ${months}個月 超過36個月限制，無法加購/升級`;
+errorInfo.textContent = `車齡 ${months}個月 超過36個月限制`;
 errorInfo.style.display = 'block';
 document.getElementById('carAgeInfo').style.display = 'none';
 return null;
@@ -425,7 +464,7 @@ result.style.display = 'block';
 }
 }
 
-// 🔥 新增購/升級計算（完全符合14條邏輯）
+// 🔥 更新加購/升級計算
 function updateUpgradePrice() {
 const car = document.getElementById('upgradeCar').value;
 const customer = document.getElementById('upgradeCustomer').value;
@@ -436,22 +475,26 @@ const result = document.getElementById('upgradeResult');
 
 if (!car || !customer || !contract || !upgradeType || !licenseDate) {
 result.className = 'upgrade-result';
-result.innerHTML = '請選擇完整方案';
+result.innerHTML = '請選擇完整方案（必須選擇原始合約）';
 result.style.display = 'none';
 return;
 }
 
-if (!checkCarAgeLimit()) {
+const months = calculateUpgradeAge();
+if (months === null || months > 60) {
 result.className = 'upgrade-result error';
-result.innerHTML = '車齡超過36個月上限';
+result.innerHTML = '車齡超過加購60個月限制';
 result.style.display = 'block';
 return;
 }
 
-const months = calculateMonths();
-if (months === null) {
+// 🔥 檢查是否為升級且超過36個月
+if (upgradeType.includes('升級') && months > 36) {
 result.className = 'upgrade-result error';
-result.innerHTML = '車齡不符合條件';
+result.innerHTML = `
+<div style="font-size: 18px;">❌ 升級僅限36個月內</div>
+<div style="font-size: 14px; margin-top: 10px;">目前車齡 ${months}個月，建議選擇加購項目</div>
+`;
 result.style.display = 'block';
 return;
 }

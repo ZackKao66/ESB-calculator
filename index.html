@@ -88,10 +88,6 @@ color: white;
 background: linear-gradient(135deg, var(--upgrade-green), #4caf50);
 color: white;
 }
-.upgrade-result.available {
-background: linear-gradient(135deg, var(--upgrade-orange), #ff9800);
-color: white;
-}
 .upgrade-result.error {
 background: linear-gradient(135deg, #f44336, #d32f2f);
 color: white;
@@ -172,7 +168,7 @@ h1 { font-size: 24px; }
 <div id="carAgeInfo" class="car-age-info"></div>
 <div id="errorInfo" class="error-info"></div>
 
-<!-- 🔥 上方一般商品查詢（移除原始合約） -->
+<!-- 上方一般商品查詢 -->
 <div class="select-row">
 <select id="car">
 <option value="">選擇車型</option>
@@ -216,11 +212,11 @@ h1 { font-size: 24px; }
 <!-- 加購條件說明 -->
 <div class="upgrade-conditions">
 <strong>📋 加購/升級條件：</strong><br>
-• 僅限<strong>個人戶</strong> • 加購：0-60個月 • 升級：0-36個月<br>
-• <strong>必須已有產品</strong>才能加購/升級
+• 僅限<strong>個人戶</strong> • 最大上限<strong>36個月</strong><br>
+• 依據<strong>原始合約</strong>決定可加購/升級項目
 </div>
 
-<!-- 🔥 下方加購/升級查詢（新增原始合約） -->
+<!-- 下方加購/升級查詢 -->
 <div class="select-row">
 <select id="upgradeCar">
 <option value="">選擇車型</option>
@@ -232,15 +228,14 @@ h1 { font-size: 24px; }
 <option value="個人戶">個人戶</option>
 </select>
 
-<!-- 🔥 原始合約欄位移到這裡 -->
 <select id="contract">
 <option value="">原始合約</option>
-<option value="加值型一年">加值型一年</option>
-<option value="加值型二年">加值型二年</option>
-<option value="加值型三年">加值型三年</option>
-<option value="全方位一年">全方位一年</option>
-<option value="全方位二年">全方位二年</option>
-<option value="全方位三年">全方位三年</option>
+<option value="加值型一年">加值型一年(12個月)</option>
+<option value="加值型二年">加值型二年(24個月)</option>
+<option value="加值型三年">加值型三年(36個月)</option>
+<option value="全方位一年">全方位一年(12個月)</option>
+<option value="全方位二年">全方位二年(24個月)</option>
+<option value="全方位三年">全方位三年(36個月)</option>
 </select>
 
 <select id="upgradeType">
@@ -310,37 +305,41 @@ const prices = {
 }
 };
 
-// 加購/升級價格資料 & 前置條件檢查
-const upgradePrices = {
-'CX743': {
-'個人戶': {
-'加購加值型一年': { '0-36': 6400, '37-60': 7680, 'required': ['加值型一年'] },
-'加購加值型二年': { '0-36': 10000, '37-60': 12000, 'required': ['加值型二年'] },
-'升級全方位一年': { 'price': 12900, 'required': ['加值型一年'] },
-'升級全方位二年': { 'price': 26700, 'required': ['加值型二年'] },
-'升級全方位三年': { 'price': 37700, 'required': ['加值型三年'] },
-'加購全方位一年': { '0-36': 15500, '37-60': 18600, 'required': ['全方位一年'] },
-'加購全方位二年': { '0-36': 27600, '37-60': 33120, 'required': ['全方位二年'] }
-}
-}
+// 🔥 新增購/升級價格（依原始合約邏輯）
+const upgradeRules = {
+'加值型一年': {
+  '加購加值型一年': { price: 6400, result: '加值型二年(24個月)' },
+  '加購加值型二年': { price: 10000, result: '加值型三年(36個月)' },
+  '升級全方位一年': { price: 12900, result: '全方位一年(12個月)' },
+  '升級全方位二年': { price: 26700, result: '全方位二年(24個月)' },
+  '升級全方位三年': { price: 37700, result: '全方位三年(36個月)' }
+},
+'加值型二年': {
+  '加購加值型一年': { price: 6400, result: '加值型三年(36個月)' },
+  '升級全方位二年': { price: 26700, result: '全方位二年(24個月)' },
+  '升級全方位三年': { price: 37700, result: '全方位三年(36個月)' }
+},
+'加值型三年': {},
+'全方位一年': {
+  '加購全方位一年': { price: 15500, result: '全方位二年(24個月)' },
+  '加購全方位二年': { price: 27600, result: '全方位三年(36個月)' }
+},
+'全方位二年': {
+  '加購全方位一年': { price: 15500, result: '全方位二年(24個月)' }
+},
+'全方位三年': {}
 };
 
-// 使用原始合約檢查前置條件
-function hasRequiredProduct(car, customer, months, upgradeType, contract) {
-if (customer !== '個人戶') return false;
-const required = upgradePrices[car]?.[customer]?.[upgradeType]?.required;
-if (!required) return false;
+// 檢查車齡是否超過36個月
+function checkCarAgeLimit() {
+const licenseDate = document.getElementById('licenseDate').value;
+if (!licenseDate) return true;
 
-// 如果有選擇原始合約，直接檢查是否符合
-if (contract) {
-return required.includes(contract);
-}
+const today = new Date();
+const license = new Date(licenseDate + 'T00:00:00');
+const months = Math.floor((today - license) / (1000 * 60 * 60 * 24 * 30.44));
 
-// 否則檢查價格表中是否有任一符合的產品
-if (!prices[car]?.[customer]?.[months]) return false;
-return required.some(productKey => {
-return prices[car][customer][months][productKey] !== undefined;
-});
+return months <= 36;
 }
 
 function calculateMonths() {
@@ -352,9 +351,9 @@ const license = new Date(licenseDate + 'T00:00:00');
 const months = Math.floor((today - license) / (1000 * 60 * 60 * 24 * 30.44));
 const days = Math.floor((today - license) / (1000 * 60 * 60 * 24));
 
-if (months > 60) {
+if (months > 36) {
 const errorInfo = document.getElementById('errorInfo');
-errorInfo.textContent = `車齡 ${months}個月 超過60個月限制`;
+errorInfo.textContent = `車齡 ${months}個月 超過36個月限制，無法加購/升級`;
 errorInfo.style.display = 'block';
 document.getElementById('carAgeInfo').style.display = 'none';
 return null;
@@ -364,9 +363,7 @@ let ageRange = '';
 if (months <= 3) ageRange = '0-3';
 else if (months <= 12) ageRange = '4-12';
 else if (months <= 30) ageRange = '13-30';
-else if (months <= 36) ageRange = '31-36';
-else if (months <= 60) ageRange = '37-60';
-else ageRange = '37-60';
+else ageRange = '31-36';
 
 const customer = document.getElementById('customer').value;
 if (customer === '非個人戶' && days > 30) {
@@ -385,7 +382,7 @@ document.getElementById('errorInfo').style.display = 'none';
 return ageRange;
 }
 
-// 原有價格計算（移除 contract 依賴）
+// 原有價格計算
 function updatePrice() {
 const car = document.getElementById('car').value;
 const customer = document.getElementById('customer').value;
@@ -428,19 +425,26 @@ result.style.display = 'block';
 }
 }
 
-// 加購/升級計算（使用下方 contract）
+// 🔥 新增購/升級計算（完全符合14條邏輯）
 function updateUpgradePrice() {
 const car = document.getElementById('upgradeCar').value;
 const customer = document.getElementById('upgradeCustomer').value;
+const contract = document.getElementById('contract').value;
 const upgradeType = document.getElementById('upgradeType').value;
-const contract = document.getElementById('contract').value;  // 🔥 使用下方 contract
 const licenseDate = document.getElementById('licenseDate').value;
 const result = document.getElementById('upgradeResult');
 
-if (!car || !customer || !upgradeType || !licenseDate) {
+if (!car || !customer || !contract || !upgradeType || !licenseDate) {
 result.className = 'upgrade-result';
 result.innerHTML = '請選擇完整方案';
 result.style.display = 'none';
+return;
+}
+
+if (!checkCarAgeLimit()) {
+result.className = 'upgrade-result error';
+result.innerHTML = '車齡超過36個月上限';
+result.style.display = 'block';
 return;
 }
 
@@ -452,44 +456,34 @@ result.style.display = 'block';
 return;
 }
 
-// 使用原始合約檢查前置條件
-if (!hasRequiredProduct(car, customer, months, upgradeType, contract)) {
-const required = upgradePrices[car][customer][upgradeType].required;
+// 🔥 檢查原始合約是否支援此加購/升級
+const upgradeOption = upgradeRules[contract]?.[upgradeType];
+if (!upgradeOption) {
 result.className = 'upgrade-result error';
 result.innerHTML = `
 <div style="font-size: 18px;">❌ 無法加購/升級</div>
 <div style="font-size: 14px; margin-top: 10px;">
-${contract ? `目前合約「${contract}」不符合需求` : ''}<br>
-必須擁有 ${required.join(' 或 ')} 才能購買
+原始合約「${contract}」<br>
+<strong>無法購買「${upgradeType}」</strong>
 </div>
 `;
 result.style.display = 'block';
 return;
 }
 
-// 計算價格
-const priceData = upgradePrices[car][customer][upgradeType];
-let price, displayText;
-
-if (upgradeType.includes('升級')) {
-price = priceData.price;
-displayText = `${upgradeType} | NT$${price.toLocaleString()}`;
-} else {
-const rangeKey = months <= '31-36' ? '0-36' : '37-60';
-price = priceData[rangeKey];
-displayText = `${upgradeType} | ${months}個月 | NT$${price.toLocaleString()}`;
-}
-
+// ✅ 可購買
 result.className = 'upgrade-result success';
 result.innerHTML = `
-<div>${displayText}</div>
-${contract ? `<div style="font-size: 14px; opacity: 0.9;">✅ 原始合約：${contract}</div>` : ''}
-<div style="font-size: 32px; margin-top: 10px;">✅ 可購買</div>
+<div>原始合約：${contract}</div>
+<div style="font-size: 16px; margin: 5px 0;">${upgradeType}</div>
+<div style="font-size: 14px; opacity: 0.9; margin-bottom: 10px;">→ ${upgradeOption.result}</div>
+<div style="font-size: 36px;">NT$${upgradeOption.price.toLocaleString()}</div>
+<div style="font-size: 24px; margin-top: 10px;">✅ 可購買</div>
 `;
 result.style.display = 'block';
 }
 
-// 🔥 事件監聽（上方移除 contract，下方新增 contract）
+// 事件監聽
 document.querySelectorAll('#car, #customer, #months, #type, #years, #licenseDate').forEach(el => {
 el.addEventListener('change', updatePrice);
 });

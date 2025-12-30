@@ -70,19 +70,49 @@ box-shadow: 0 6px 20px var(--shadow-color);
 }
 .date-row { display: flex; align-items: center; gap: 15px; margin-bottom: 10px; flex-wrap: wrap; }
 .date-label { font-weight: bold; color: var(--blue-color); white-space: nowrap; font-size: 16px; }
-.date-input { flex: 1; min-width: 200px; padding: 15px; font-size: 16px; border: 2px solid var(--border-color); border-radius: 8px; background: var(--card-bg); color: var(--text-color); }
-.select-row { display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 20px; }
-select {
-flex: 1; min-width: 140px; padding: 15px; font-size: 16px;
-border: 2px solid var(--border-color); border-radius: 8px;
-background: var(--card-bg); color: var(--text-color);
-transition: all 0.3s ease;
+.date-input { 
+  flex: 1; min-width: 200px; padding: 15px; font-size: 16px; 
+  border: 2px solid var(--border-color); border-radius: 8px;
+  background: var(--card-bg); color: var(--text-color);
 }
-select:focus { border-color: var(--blue-color); outline: none; box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.1); }
+.select-row { display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 20px; }
+
+/* 🔥 行動裝置輸入優化 */
+select, .date-input {
+  flex: 1; min-width: 140px; padding: 15px; font-size: 16px;
+  border: 2px solid var(--border-color); border-radius: 8px;
+  background: var(--card-bg); color: var(--text-color);
+  transition: all 0.3s ease;
+  /* 虛擬鍵盤適配：動態padding */
+  @supports (padding: max(0px)) {
+    padding-block: max(16px, 4vh);
+    padding-inline: 12px;
+  }
+  /* 日期選擇器美化 */
+  &::-webkit-calendar-picker-indicator {
+    cursor: pointer; opacity: 0.8; padding: 5px;
+    filter: brightness(1.2);
+  }
+  /* Safari iOS 日期選擇器 */
+  &::-webkit-datetime-edit {
+    padding: 8px;
+  }
+  /* 行動裝置點擊反饋 */
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+select:focus, .date-input:focus { 
+  border-color: var(--blue-color); 
+  outline: none; 
+  box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.1); 
+}
 .result, .upgrade-result {
 padding: 30px; border-radius: 15px;
 text-align: center; font-size: 28px; font-weight: bold;
 margin-top: 30px; display: none; transition: all 0.3s ease;
+cursor: pointer; /* 準備複製功能 */
 }
 .result {
 background: linear-gradient(135deg, #4CAF50, #45a049);
@@ -165,7 +195,10 @@ color: var(--disclaimer-color);
 .date-label { text-align: center; margin-bottom: 5px; }
 .select-row { flex-direction: column; }
 .result, .upgrade-result { font-size: 24px; }
-select, .date-input { font-size: 18px; }
+select, .date-input { 
+  font-size: clamp(16px, 5vw, 20px); 
+  min-height: 50px; /* 確保手指觸控舒適 */
+}
 h1 { font-size: 24px; }
 .theme-toggle { top: 10px; right: 10px; padding: 6px 12px; font-size: 14px; }
 .section-subtitle { font-size: 18px; }
@@ -181,10 +214,10 @@ h1 { font-size: 24px; }
 <h1>🛒安心保固價格查詢表</h1>
 </div>
 
-<!-- 🔥 日期輸入（已改為 年/月/日 顯示） -->
+<!-- 🔥 日期輸入（行動裝置最佳化） -->
 <div class="date-row">
 <div class="date-label">📅 原始領牌日期：</div>
-<input type="date" id="licenseDate" class="date-input">
+<input type="date" id="licenseDate" class="date-input" placeholder="請選擇日期">
 </div>
 <div id="carAgeInfo" class="car-age-info"></div>
 <div id="errorInfo" class="error-info"></div>
@@ -227,7 +260,7 @@ h1 { font-size: 24px; }
 </select>
 </div>
 
-<div id="result" class="result">請選擇完整方案</div>
+<div id="result" class="result" title="點擊複製報價">請選擇完整方案</div>
 
 <!-- 分隔線 -->
 <div class="section-divider"></div>
@@ -277,7 +310,7 @@ h1 { font-size: 24px; }
 </select>
 </div>
 
-<div id="upgradeResult" class="upgrade-result">請選擇完整方案</div>
+<div id="upgradeResult" class="upgrade-result" title="點擊複製報價">請選擇完整方案</div>
 </div>
 
 <!-- 報價說明文字區塊 -->
@@ -309,6 +342,21 @@ themeToggle.textContent = '☀️';
 localStorage.setItem('theme', 'dark');
 }
 });
+
+// 🔥 行動裝置複製功能
+function addCopyToClipboard(element) {
+  element.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(element.textContent);
+      // 複製成功動畫
+      const original = element.innerHTML;
+      element.innerHTML = `${original}<br><small style="font-size:12px;opacity:0.8;">已複製✓</small>`;
+      setTimeout(() => element.innerHTML = original, 1500);
+    } catch(e) {
+      console.log('複製失敗');
+    }
+  });
+}
 
 // 🔥 日期格式化函數：將 yyyy-MM-dd 轉為 年/月/日
 function formatTaiwanDate(dateString) {
@@ -361,6 +409,10 @@ const upgradeRules = {
 },
 '全方位三年': {}
 };
+
+// 🔥 初始化複製功能
+addCopyToClipboard(document.getElementById('result'));
+addCopyToClipboard(document.getElementById('upgradeResult'));
 
 // 🔥 計算車齡並顯示加購/升級資訊
 function calculateUpgradeAge() {

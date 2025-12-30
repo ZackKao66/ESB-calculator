@@ -1,3 +1,6 @@
+以下是更新後的完整程式碼，新增了**「原始合約」下拉選單**：
+
+xml
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
@@ -164,7 +167,7 @@ h1 { font-size: 24px; }
 <h1>🛒安心保固價格查詢表</h1>
 </div>
 
-<!-- 原有日期輸入 -->
+<!-- 日期輸入 -->
 <div class="date-row">
 <div class="date-label">📅 領牌日期：</div>
 <input type="date" id="licenseDate" class="date-input">
@@ -172,7 +175,7 @@ h1 { font-size: 24px; }
 <div id="carAgeInfo" class="car-age-info"></div>
 <div id="errorInfo" class="error-info"></div>
 
-<!-- 原有一般商品查詢 -->
+<!-- 一般商品查詢 -->
 <div class="select-row">
 <select id="car">
 <option value="">選擇車型</option>
@@ -183,6 +186,17 @@ h1 { font-size: 24px; }
 <option value="">顧客類別</option>
 <option value="個人戶">個人戶</option>
 <option value="非個人戶">非個人戶</option>
+</select>
+
+<!-- 🔥 新增原始合約欄位 -->
+<select id="contract">
+<option value="">原始合約</option>
+<option value="加值型一年">加值型一年</option>
+<option value="加值型二年">加值型二年</option>
+<option value="加值型三年">加值型三年</option>
+<option value="全方位一年">全方位一年</option>
+<option value="全方位二年">全方位二年</option>
+<option value="全方位三年">全方位三年</option>
 </select>
 
 <select id="months">
@@ -314,14 +328,20 @@ const upgradePrices = {
 }
 };
 
-// 前置產品擁有檢查
-function hasRequiredProduct(car, customer, months, upgradeType) {
+// 🔥 使用原始合約檢查前置條件
+function hasRequiredProduct(car, customer, months, upgradeType, contract) {
 if (customer !== '個人戶') return false;
 const required = upgradePrices[car]?.[customer]?.[upgradeType]?.required;
-if (!required || !prices[car]?.[customer]?.[months]) return false;
+if (!required) return false;
 
+// 如果有選擇原始合約，直接檢查是否符合
+if (contract) {
+return required.includes(contract);
+}
+
+// 否則檢查價格表中是否有任一符合的產品
+if (!prices[car]?.[customer]?.[months]) return false;
 return required.some(productKey => {
-const [type, years] = productKey.split(' ');
 return prices[car][customer][months][productKey] !== undefined;
 });
 }
@@ -368,10 +388,11 @@ document.getElementById('errorInfo').style.display = 'none';
 return ageRange;
 }
 
-// 原有價格計算（不變）
+// 原有價格計算
 function updatePrice() {
 const car = document.getElementById('car').value;
 const customer = document.getElementById('customer').value;
+const contract = document.getElementById('contract').value;
 const licenseDate = document.getElementById('licenseDate').value;
 let months;
 
@@ -401,6 +422,7 @@ const price = priceData?.[priceKey];
 if (price !== undefined) {
 result.innerHTML = `
 <div>${car} | ${customer} | ${months}個月 | ${type}${years}</div>
+${contract ? `<div style="font-size: 14px; opacity: 0.9;">原始合約：${contract}</div>` : ''}
 <div style="font-size: 36px; margin-top: 10px;">NT$${price.toLocaleString()}</div>
 `;
 result.style.display = 'block';
@@ -411,11 +433,12 @@ result.style.display = 'block';
 }
 }
 
-// 新增 加購/升級計算
+// 加購/升級計算（支援原始合約）
 function updateUpgradePrice() {
 const car = document.getElementById('upgradeCar').value;
 const customer = document.getElementById('upgradeCustomer').value;
 const upgradeType = document.getElementById('upgradeType').value;
+const contract = document.getElementById('contract').value;
 const licenseDate = document.getElementById('licenseDate').value;
 const result = document.getElementById('upgradeResult');
 
@@ -434,12 +457,16 @@ result.style.display = 'block';
 return;
 }
 
-// 檢查前置條件
-if (!hasRequiredProduct(car, customer, months, upgradeType)) {
+// 🔥 使用原始合約檢查前置條件
+if (!hasRequiredProduct(car, customer, months, upgradeType, contract)) {
+const required = upgradePrices[car][customer][upgradeType].required;
 result.className = 'upgrade-result error';
 result.innerHTML = `
 <div style="font-size: 18px;">❌ 無法加購/升級</div>
-<div style="font-size: 14px; margin-top: 10px;">必須擁有 ${upgradePrices[car][customer][upgradeType].required.join(' 或 ')} 才能購買</div>
+<div style="font-size: 14px; margin-top: 10px;">
+${contract ? `目前合約「${contract}」不符合需求` : ''}<br>
+必須擁有 ${required.join(' 或 ')} 才能購買
+</div>
 `;
 result.style.display = 'block';
 return;
@@ -461,17 +488,18 @@ displayText = `${upgradeType} | ${months}個月 | NT$${price.toLocaleString()}`;
 result.className = 'upgrade-result success';
 result.innerHTML = `
 <div>${displayText}</div>
+${contract ? `<div style="font-size: 14px; opacity: 0.9;">✅ 原始合約：${contract}</div>` : ''}
 <div style="font-size: 32px; margin-top: 10px;">✅ 可購買</div>
 `;
 result.style.display = 'block';
 }
 
-// 事件監聽
-document.querySelectorAll('#car, #customer, #months, #type, #years, #licenseDate').forEach(el => {
+// 事件監聽（新增 contract）
+document.querySelectorAll('#car, #customer, #contract, #months, #type, #years, #licenseDate').forEach(el => {
 el.addEventListener('change', updatePrice);
 });
 
-document.querySelectorAll('#upgradeCar, #upgradeCustomer, #upgradeType, #upgradeYears, #licenseDate').forEach(el => {
+document.querySelectorAll('#upgradeCar, #upgradeCustomer, #upgradeType, #contract, #upgradeYears, #licenseDate').forEach(el => {
 el.addEventListener('change', updateUpgradePrice);
 });
 </script>

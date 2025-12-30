@@ -47,6 +47,10 @@ transition: all 0.3s ease;
 margin-bottom: 30px;
 }
 .header { text-align: center; margin-bottom: 30px; }
+.section-subtitle {
+font-size: 20px; font-weight: bold; color: var(--blue-color);
+text-align: center; margin: 20px 0 15px 0;
+}
 .theme-toggle {
 position: absolute;
 top: 20px;
@@ -146,6 +150,9 @@ border-left-color: #66bb6a;
 background: #5f3d1a; color: #ffd699;
 border-left-color: #ff9800;
 }
+[data-theme="dark"] .section-subtitle {
+color: var(--blue-color);
+}
 h1 { color: var(--blue-color); margin: 0 0 10px 0; font-size: 28px; }
 .disclaimer {
 margin-top: 16px;
@@ -161,6 +168,7 @@ color: var(--disclaimer-color);
 select, .date-input { font-size: 18px; }
 h1 { font-size: 24px; }
 .theme-toggle { top: 10px; right: 10px; padding: 6px 12px; font-size: 14px; }
+.section-subtitle { font-size: 18px; }
 }
 </style>
 </head>
@@ -173,13 +181,16 @@ h1 { font-size: 24px; }
 <h1>🛒安心保固價格查詢表</h1>
 </div>
 
-<!-- 日期輸入 -->
+<!-- 🔥 日期輸入 -->
 <div class="date-row">
-<div class="date-label">📅 領牌日期：</div>
+<div class="date-label">📅 原始領牌日期：</div>
 <input type="date" id="licenseDate" class="date-input">
 </div>
 <div id="carAgeInfo" class="car-age-info"></div>
 <div id="errorInfo" class="error-info"></div>
+
+<!-- 🔥 新增一般合約價格查詢標題 -->
+<div class="section-subtitle">🎈一般合約價格查詢</div>
 
 <!-- 上方一般商品查詢 -->
 <div class="select-row">
@@ -220,7 +231,7 @@ h1 { font-size: 24px; }
 
 <!-- 分隔線 -->
 <div class="section-divider"></div>
-<div class="section-title">🔄 加購/升級價格查詢</div>
+<div class="section-title">🆙 加購/升級價格查詢</div>
 
 <!-- 加購條件說明 -->
 <div class="upgrade-conditions">
@@ -232,7 +243,7 @@ h1 { font-size: 24px; }
 <!-- 加購專用車齡顯示 -->
 <div id="upgradeAgeInfo" class="upgrade-age-info" style="display: none;"></div>
 
-<!-- 🔥 下方加購/升級查詢（5個欄位，刪除保固年限） -->
+<!-- 下方加購/升級查詢 -->
 <div class="select-row">
 <select id="upgradeCar">
 <option value="">選擇車型</option>
@@ -254,7 +265,6 @@ h1 { font-size: 24px; }
 <option value="全方位三年">全方位三年(36個月)</option>
 </select>
 
-<!-- 🔥 調整順序：加購在前，升級在後 -->
 <select id="upgradeType">
 <option value="">加購/升級</option>
 <option value="加購加值型一年">加購加值型一年(12個月)</option>
@@ -458,7 +468,7 @@ result.style.display = 'block';
 }
 }
 
-// 🔥 更新加購/升級計算（移除保固年限依賴）
+// 更新加購/升級計算
 function updateUpgradePrice() {
 const car = document.getElementById('upgradeCar').value;
 const customer = document.getElementById('upgradeCustomer').value;
@@ -482,7 +492,6 @@ result.style.display = 'block';
 return;
 }
 
-// 🔥 檢查是否為升級且超過36個月
 if (upgradeType.includes('升級') && months > 36) {
 result.className = 'upgrade-result error';
 result.innerHTML = `
@@ -493,7 +502,6 @@ result.style.display = 'block';
 return;
 }
 
-// 🔥 檢查原始合約是否支援此加購/升級
 const upgradeOption = upgradeRules[contract]?.[upgradeType];
 if (!upgradeOption) {
 result.className = 'upgrade-result error';
@@ -508,7 +516,6 @@ result.style.display = 'block';
 return;
 }
 
-// ✅ 可購買
 result.className = 'upgrade-result success';
 result.innerHTML = `
 <div>原始合約：${contract}</div>
@@ -520,7 +527,7 @@ result.innerHTML = `
 result.style.display = 'block';
 }
 
-// 事件監聽（移除 upgradeYears）
+// 事件監聽
 document.querySelectorAll('#car, #customer, #months, #type, #years, #licenseDate').forEach(el => {
 el.addEventListener('change', updatePrice);
 });

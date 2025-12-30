@@ -181,7 +181,7 @@ h1 { font-size: 24px; }
 <h1>🛒安心保固價格查詢表</h1>
 </div>
 
-<!-- 🔥 日期輸入 -->
+<!-- 🔥 日期輸入（已改為 年/月/日 顯示） -->
 <div class="date-row">
 <div class="date-label">📅 原始領牌日期：</div>
 <input type="date" id="licenseDate" class="date-input">
@@ -310,6 +310,16 @@ localStorage.setItem('theme', 'dark');
 }
 });
 
+// 🔥 日期格式化函數：將 yyyy-MM-dd 轉為 年/月/日
+function formatTaiwanDate(dateString) {
+  if (!dateString) return '';
+  const date = new Date(dateString + 'T00:00:00');
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}年${month}月${day}日`;
+}
+
 // 原有價格資料
 const prices = {
 'CX743': {
@@ -379,7 +389,7 @@ status = `✅ 車齡 ${months}個月 可加購/升級`;
 upgradeAgeInfo.className = 'upgrade-age-info';
 }
 
-upgradeAgeInfo.innerHTML = `目前車齡：${days}天（${months}個月）→ ${status}`;
+upgradeAgeInfo.innerHTML = `目前車齡：${days}天（${months}個月）→ ${status}<br><small>領牌日期：${formatTaiwanDate(licenseDate)}</small>`;
 upgradeAgeInfo.style.display = 'block';
 
 return months;
@@ -396,7 +406,7 @@ const days = Math.floor((today - license) / (1000 * 60 * 60 * 24));
 
 if (months > 36) {
 const errorInfo = document.getElementById('errorInfo');
-errorInfo.textContent = `車齡 ${months}個月 超過36個月限制`;
+errorInfo.innerHTML = `車齡 ${months}個月 超過36個月限制<br><small>領牌日期：${formatTaiwanDate(licenseDate)}</small>`;
 errorInfo.style.display = 'block';
 document.getElementById('carAgeInfo').style.display = 'none';
 return null;
@@ -411,14 +421,14 @@ else ageRange = '31-36';
 const customer = document.getElementById('customer').value;
 if (customer === '非個人戶' && days > 30) {
 const errorInfo = document.getElementById('errorInfo');
-errorInfo.textContent = `非個人戶僅限領牌30天內購買，目前車齡 ${days}天，已超過限制`;
+errorInfo.innerHTML = `非個人戶僅限領牌30天內購買，目前車齡 ${days}天，已超過限制<br><small>領牌日期：${formatTaiwanDate(licenseDate)}</small>`;
 errorInfo.style.display = 'block';
 document.getElementById('carAgeInfo').style.display = 'none';
 return null;
 }
 
 const carAgeInfo = document.getElementById('carAgeInfo');
-carAgeInfo.textContent = `計算車齡：${days}天（${months}個月）→ ${ageRange}個月區間`;
+carAgeInfo.innerHTML = `計算車齡：${days}天（${months}個月）→ ${ageRange}個月區間<br><small>領牌日期：${formatTaiwanDate(licenseDate)}</small>`;
 carAgeInfo.style.display = 'block';
 document.getElementById('errorInfo').style.display = 'none';
 
@@ -497,6 +507,7 @@ result.className = 'upgrade-result error';
 result.innerHTML = `
 <div style="font-size: 18px;">❌ 升級僅限36個月內</div>
 <div style="font-size: 14px; margin-top: 10px;">目前車齡 ${months}個月，建議選擇加購項目</div>
+<small style="font-size: 12px;">領牌日期：${formatTaiwanDate(licenseDate)}</small>
 `;
 result.style.display = 'block';
 return;
@@ -511,6 +522,7 @@ result.innerHTML = `
 原始合約「${contract}」<br>
 <strong>無法購買「${upgradeType}」</strong>
 </div>
+<small style="font-size: 12px;">領牌日期：${formatTaiwanDate(licenseDate)}</small>
 `;
 result.style.display = 'block';
 return;
@@ -523,6 +535,7 @@ result.innerHTML = `
 <div style="font-size: 14px; opacity: 0.9; margin-bottom: 10px;">→ ${upgradeOption.result}</div>
 <div style="font-size: 36px;">NT$${upgradeOption.price.toLocaleString()}</div>
 <div style="font-size: 24px; margin-top: 10px;">✅ 可購買</div>
+<small style="font-size: 12px; margin-top: 5px;">領牌日期：${formatTaiwanDate(licenseDate)}</small>
 `;
 result.style.display = 'block';
 }

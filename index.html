@@ -229,10 +229,10 @@ h1 { font-size: 24px; }
 • <strong>必須選擇原始合約</strong>才能加購/升級
 </div>
 
-<!-- 🔥 加購專用車齡顯示 -->
+<!-- 加購專用車齡顯示 -->
 <div id="upgradeAgeInfo" class="upgrade-age-info" style="display: none;"></div>
 
-<!-- 下方加購/升級查詢 -->
+<!-- 🔥 下方加購/升級查詢（5個欄位，刪除保固年限） -->
 <div class="select-row">
 <select id="upgradeCar">
 <option value="">選擇車型</option>
@@ -254,22 +254,16 @@ h1 { font-size: 24px; }
 <option value="全方位三年">全方位三年(36個月)</option>
 </select>
 
+<!-- 🔥 調整順序：加購在前，升級在後 -->
 <select id="upgradeType">
 <option value="">加購/升級</option>
-<option value="加購加值型一年">加購加值型一年</option>
-<option value="加購加值型二年">加購加值型二年</option>
-<option value="升級全方位一年">升級全方位一年</option>
-<option value="升級全方位二年">升級全方位二年</option>
-<option value="升級全方位三年">升級全方位三年</option>
-<option value="加購全方位一年">加購全方位一年</option>
-<option value="加購全方位二年">加購全方位二年</option>
-</select>
-
-<select id="upgradeYears">
-<option value="">保固年限</option>
-<option value="一年">一年</option>
-<option value="二年">二年</option>
-<option value="三年">三年</option>
+<option value="加購加值型一年">加購加值型一年(12個月)</option>
+<option value="加購加值型二年">加購加值型二年(24個月)</option>
+<option value="加購全方位一年">加購全方位一年(12個月)</option>
+<option value="加購全方位二年">加購全方位二年(24個月)</option>
+<option value="升級全方位一年">升級全方位一年(12個月)</option>
+<option value="升級全方位二年">升級全方位二年(24個月)</option>
+<option value="升級全方位三年">升級全方位三年(36個月)</option>
 </select>
 </div>
 
@@ -321,7 +315,7 @@ const prices = {
 }
 };
 
-// 🔥 更新加購/升級規則（包含第15條）
+// 🔥 加購/升級規則
 const upgradeRules = {
 '加值型一年': {
   '加購加值型一年': { price: 6400, result: '加值型二年(24個月)' },
@@ -336,7 +330,7 @@ const upgradeRules = {
   '升級全方位三年': { price: 37700, result: '全方位三年(36個月)' }
 },
 '加值型三年': {
-  '升級全方位三年': { price: 37700, result: '全方位三年(36個月)' }  // 🔥 第15條
+  '升級全方位三年': { price: 37700, result: '全方位三年(36個月)' }
 },
 '全方位一年': {
   '加購全方位一年': { price: 15500, result: '全方位二年(24個月)' },
@@ -464,7 +458,7 @@ result.style.display = 'block';
 }
 }
 
-// 🔥 更新加購/升級計算
+// 🔥 更新加購/升級計算（移除保固年限依賴）
 function updateUpgradePrice() {
 const car = document.getElementById('upgradeCar').value;
 const customer = document.getElementById('upgradeCustomer').value;
@@ -526,12 +520,12 @@ result.innerHTML = `
 result.style.display = 'block';
 }
 
-// 事件監聽
+// 事件監聽（移除 upgradeYears）
 document.querySelectorAll('#car, #customer, #months, #type, #years, #licenseDate').forEach(el => {
 el.addEventListener('change', updatePrice);
 });
 
-document.querySelectorAll('#upgradeCar, #upgradeCustomer, #contract, #upgradeType, #upgradeYears, #licenseDate').forEach(el => {
+document.querySelectorAll('#upgradeCar, #upgradeCustomer, #contract, #upgradeType, #licenseDate').forEach(el => {
 el.addEventListener('change', updateUpgradePrice);
 });
 </script>

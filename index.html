@@ -643,6 +643,12 @@ result.innerHTML = `
 <div style="font-size: 36px;">NT$${upgradeOption[ageRange].toLocaleString()}</div>
 <div style="font-size: 24px; margin-top: 10px;">✅ 可購買</div>
 <small style="font-size: 12px; margin-top: 5px;">領牌日期：${formatTaiwanDate(licenseDate)}</small>
+<div style="margin-top:15px;">
+  <button onclick="shareLine(\`🛒福特安心保固升級報價\\n━━━━━━━━━━━━━━\\n車型：${car}\\n原始合約：${contract}\\n方案：${upgradeType}\\n→ ${upgradeOption.result}\\n💰 NT$${upgradeOption[ageRange].toLocaleString()}\\n📅 ${new Date().toLocaleDateString('zh-TW')}\\n━━━━━━━━━━━━━━\`)" 
+    style="background:#00b900;color:white;padding:12px 24px;border:none;border-radius:8px;font-size:16px;font-weight:bold;width:100%;box-shadow:0 4px 12px rgba(0,185,0,0.3);">
+    📱 LINE分享客戶
+  </button>
+</div>
 `;
 result.style.display = 'block';
 }

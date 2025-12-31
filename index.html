@@ -83,27 +83,22 @@ box-shadow: 0 6px 20px var(--shadow-color);
 }
 .select-row { display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 20px; }
 
-/* 🔥 行動裝置輸入優化 */
 select, .date-input {
   flex: 1; min-width: 140px; padding: 15px; font-size: 16px;
   border: 2px solid var(--border-color); border-radius: 8px;
   background: var(--card-bg); color: var(--text-color);
   transition: all 0.3s ease;
-  /* 虛擬鍵盤適配：動態padding */
   @supports (padding: max(0px)) {
     padding-block: max(16px, 4vh);
     padding-inline: 12px;
   }
-  /* 日期選擇器美化 */
   &::-webkit-calendar-picker-indicator {
     cursor: pointer; opacity: 0.8; padding: 5px;
     filter: brightness(1.2);
   }
-  /* Safari iOS 日期選擇器 */
   &::-webkit-datetime-edit {
     padding: 8px;
   }
-  /* 行動裝置點擊反饋 */
   &:active {
     transform: scale(0.98);
   }
@@ -118,7 +113,7 @@ select:focus, .date-input:focus {
 padding: 30px; border-radius: 15px;
 text-align: center; font-size: 28px; font-weight: bold;
 margin-top: 30px; display: none; transition: all 0.3s ease;
-cursor: pointer; /* 準備複製功能 */
+cursor: pointer;
 }
 .result {
 background: linear-gradient(135deg, #4CAF50, #45a049);
@@ -190,7 +185,7 @@ color: var(--disclaimer-color);
 .result, .upgrade-result { font-size: 24px; }
 select, .date-input { 
   font-size: clamp(16px, 5vw, 20px); 
-  min-height: 50px; /* 確保手指觸控舒適 */
+  min-height: 50px;
 }
 h1 { font-size: 24px; }
 .theme-toggle { top: 10px; right: 10px; padding: 6px 12px; font-size: 14px; }
@@ -198,7 +193,6 @@ h1 { font-size: 24px; }
 </style>
 </head>
 <body>
-<!-- 🌙 主題切換按鈕 -->
 <button class="theme-toggle" id="themeToggle" title="切換主題">☀️</button>
 
 <div class="container">
@@ -206,7 +200,6 @@ h1 { font-size: 24px; }
 <h1>🛒安心保固價格查詢表</h1>
 </div>
 
-<!-- 🔥 日期輸入（行動裝置最佳化） -->
 <div class="date-row">
 <div class="date-label">📅 原始領牌日期：</div>
 <input type="date" id="licenseDate" class="date-input" placeholder="請選擇日期">
@@ -214,10 +207,8 @@ h1 { font-size: 24px; }
 <div id="carAgeInfo" class="car-age-info"></div>
 <div id="errorInfo" class="error-info"></div>
 
-<!-- 🔥 新增一般合約價格查詢標題 -->
 <div class="section-title">🎈一般合約價格查詢</div>
 
-<!-- 上方一般商品查詢 -->
 <div class="select-row">
 <select id="car">
 <option value="">選擇車型</option>
@@ -225,13 +216,11 @@ h1 { font-size: 24px; }
 <option value="C519">C519</option>
 <option value="CX482">CX482</option>
 </select>
-
 <select id="customer">
 <option value="">顧客類別</option>
 <option value="個人戶">個人戶</option>
 <option value="非個人戶">非個人戶</option>
 </select>
-
 <select id="months">
 <option value="">車齡區間</option>
 <option value="0-3">0-3個月</option>
@@ -239,13 +228,11 @@ h1 { font-size: 24px; }
 <option value="13-30">13-30個月</option>
 <option value="31-36">31-36個月</option>
 </select>
-
 <select id="type">
 <option value="">產品類別</option>
 <option value="加值型">加值型</option>
 <option value="全方位">全方位</option>
 </select>
-
 <select id="years">
 <option value="">保固年限</option>
 <option value="一年">一年</option>
@@ -256,21 +243,17 @@ h1 { font-size: 24px; }
 
 <div id="result" class="result" title="點擊複製報價">請選擇完整方案</div>
 
-<!-- 分隔線 -->
 <div class="section-divider"></div>
 <div class="section-title">🆙 加購/升級價格查詢</div>
 
-<!-- 加購條件說明 -->
 <div class="upgrade-conditions">
 <strong>📋 加購/升級條件：</strong><br>
 • 僅限<strong>個人戶</strong> • 加購：0-60個月 • 升級：0-36個月<br>
 • <strong>必須選擇原始合約</strong>才能加購/升級
 </div>
 
-<!-- 加購專用車齡顯示 -->
 <div id="upgradeAgeInfo" class="upgrade-age-info" style="display: none;"></div>
 
-<!-- 下方加購/升級查詢 -->
 <div class="select-row">
 <select id="upgradeCar">
 <option value="">選擇車型</option>
@@ -278,12 +261,10 @@ h1 { font-size: 24px; }
 <option value="C519">C519</option>
 <option value="CX482">CX482</option>
 </select>
-
 <select id="upgradeCustomer">
 <option value="">顧客類別</option>
 <option value="個人戶">個人戶</option>
 </select>
-
 <select id="contract">
 <option value="">原始合約</option>
 <option value="加值型一年">加值型一年(12個月)</option>
@@ -293,7 +274,6 @@ h1 { font-size: 24px; }
 <option value="全方位二年">全方位二年(24個月)</option>
 <option value="全方位三年">全方位三年(36個月)</option>
 </select>
-
 <select id="upgradeType">
 <option value="">加購/升級</option>
 <option value="加購加值型一年">加購加值型一年(12個月)</option>
@@ -309,7 +289,6 @@ h1 { font-size: 24px; }
 <div id="upgradeResult" class="upgrade-result" title="點擊複製報價">請選擇完整方案</div>
 </div>
 
-<!-- 報價說明文字區塊 -->
 <div class="disclaimer">
 【報價說明】 本平台資訊僅供參考，不具法律要約效力。所有報價均以福特六和官方通報為準，福特六和保留價格最終決定權與異動權。
 </div>
@@ -344,7 +323,6 @@ function addCopyToClipboard(element) {
   element.addEventListener('click', async () => {
     try {
       await navigator.clipboard.writeText(element.textContent);
-      // 複製成功動畫
       const original = element.innerHTML;
       element.innerHTML = `${original}<br><small style="font-size:12px;opacity:0.8;">已複製✓</small>`;
       setTimeout(() => element.innerHTML = original, 1500);
@@ -354,7 +332,6 @@ function addCopyToClipboard(element) {
   });
 }
 
-// 🔥 日期格式化函數：將 yyyy-MM-dd 轉為 年/月/日
 function formatTaiwanDate(dateString) {
   if (!dateString) return '';
   const date = new Date(dateString + 'T00:00:00');
@@ -364,7 +341,7 @@ function formatTaiwanDate(dateString) {
   return `${year}年${month}月${day}日`;
 }
 
-// 🔥 更新後的完整價格資料（新增 C519 + CX482）
+// 🔥 完整價格資料（一般合約）
 const prices = {
 'CX743': {
 '個人戶': {
@@ -401,38 +378,88 @@ const prices = {
 }
 };
 
-// 🔥 加購/升級規則
+// 🔥 加購/升級價格（依車齡區間）
 const upgradeRules = {
+'CX743': {
 '加值型一年': {
-  '加購加值型一年': { price: 6400, result: '加值型二年(24個月)' },
-  '加購加值型二年': { price: 10000, result: '加值型三年(36個月)' },
-  '升級全方位一年': { price: 12900, result: '全方位一年(12個月)' },
-  '升級全方位二年': { price: 26700, result: '全方位二年(24個月)' },
-  '升級全方位三年': { price: 37700, result: '全方位三年(36個月)' }
+  '加購加值型一年': { '0-36': 6400, '37-60': 7680, result: '加值型二年(24個月)' },
+  '加購加值型二年': { '0-36': 10000, '37-60': 12000, result: '加值型三年(36個月)' },
+  '升級全方位一年': { '0-36': 12900, result: '全方位一年(12個月)' },
+  '升級全方位二年': { '0-36': 26700, result: '全方位二年(24個月)' },
+  '升級全方位三年': { '0-36': 37700, result: '全方位三年(36個月)' }
 },
 '加值型二年': {
-  '加購加值型一年': { price: 6400, result: '加值型三年(36個月)' },
-  '升級全方位二年': { price: 26700, result: '全方位二年(24個月)' },
-  '升級全方位三年': { price: 37700, result: '全方位三年(36個月)' }
+  '加購加值型一年': { '0-36': 6400, '37-60': 7680, result: '加值型三年(36個月)' },
+  '升級全方位二年': { '0-36': 26700, result: '全方位二年(24個月)' },
+  '升級全方位三年': { '0-36': 37700, result: '全方位三年(36個月)' }
 },
 '加值型三年': {
-  '升級全方位三年': { price: 37700, result: '全方位三年(36個月)' }
+  '升級全方位三年': { '0-36': 37700, result: '全方位三年(36個月)' }
 },
 '全方位一年': {
-  '加購全方位一年': { price: 15500, result: '全方位二年(24個月)' },
-  '加購全方位二年': { price: 27600, result: '全方位三年(36個月)' }
+  '加購全方位一年': { '0-36': 15500, '37-60': 18600, result: '全方位二年(24個月)' },
+  '加購全方位二年': { '0-36': 27600, '37-60': 33120, result: '全方位三年(36個月)' }
 },
 '全方位二年': {
-  '加購全方位一年': { price: 15500, result: '全方位二年(24個月)' }
+  '加購全方位一年': { '0-36': 15500, '37-60': 18600, result: '全方位二年(24個月)' }
 },
 '全方位三年': {}
+},
+'C519': {
+'加值型一年': {
+  '加購加值型一年': { '0-36': 2730, '37-60': 3280, result: '加值型二年(24個月)' },
+  '加購加值型二年': { '0-36': 4040, '37-60': 4850, result: '加值型三年(36個月)' },
+  '升級全方位一年': { '0-36': 7450, result: '全方位一年(12個月)' },
+  '升級全方位二年': { '0-36': 15000, result: '全方位二年(24個月)' },
+  '升級全方位三年': { '0-36': 18800, result: '全方位三年(36個月)' }
+},
+'加值型二年': {
+  '加購加值型一年': { '0-36': 2730, '37-60': 3280, result: '加值型三年(36個月)' },
+  '升級全方位二年': { '0-36': 13600, result: '全方位二年(24個月)' },
+  '升級全方位三年': { '0-36': 17400, result: '全方位三年(36個月)' }
+},
+'加值型三年': {
+  '升級全方位三年': { '0-36': 16500, result: '全方位三年(36個月)' }
+},
+'全方位一年': {
+  '加購全方位一年': { '0-36': 7350, '37-60': 8820, result: '全方位二年(24個月)' },
+  '加購全方位二年': { '0-36': 13650, '37-60': 16380, result: '全方位三年(36個月)' }
+},
+'全方位二年': {
+  '加購全方位一年': { '0-36': 13650, '37-60': 16380, result: '全方位二年(24個月)' }
+},
+'全方位三年': {}
+},
+'CX482': {
+'加值型一年': {
+  '加購加值型一年': { '0-36': 4700, '37-60': 5640, result: '加值型二年(24個月)' },
+  '加購加值型二年': { '0-36': 6600, '37-60': 7920, result: '加值型三年(36個月)' },
+  '升級全方位一年': { '0-36': 11200, result: '全方位一年(12個月)' },
+  '升級全方位二年': { '0-36': 23200, result: '全方位二年(24個月)' },
+  '升級全方位三年': { '0-36': 32750, result: '全方位三年(36個月)' }
+},
+'加值型二年': {
+  '加購加值型一年': { '0-36': 4700, '37-60': 5640, result: '加值型三年(36個月)' },
+  '升級全方位二年': { '0-36': 21150, result: '全方位二年(24個月)' },
+  '升級全方位三年': { '0-36': 30700, result: '全方位三年(36個月)' }
+},
+'加值型三年': {
+  '升級全方位三年': { '0-36': 28700, result: '全方位三年(36個月)' }
+},
+'全方位一年': {
+  '加購全方位一年': { '0-36': 14760, '37-60': 17710, result: '全方位二年(24個月)' },
+  '加購全方位二年': { '0-36': 24700, '37-60': 29640, result: '全方位三年(36個月)' }
+},
+'全方位二年': {
+  '加購全方位一年': { '0-36': 14760, '37-60': 17710, result: '全方位二年(24個月)' }
+},
+'全方位三年': {}
+}
 };
 
-// 🔥 初始化複製功能
 addCopyToClipboard(document.getElementById('result'));
 addCopyToClipboard(document.getElementById('upgradeResult'));
 
-// 🔥 計算車齡並顯示加購/升級資訊
 function calculateUpgradeAge() {
 const licenseDate = document.getElementById('licenseDate').value;
 if (!licenseDate) {
@@ -462,7 +489,7 @@ upgradeAgeInfo.className = 'upgrade-age-info';
 upgradeAgeInfo.innerHTML = `目前車齡：${days}天（${months}個月）→ ${status}<br><small>領牌日期：${formatTaiwanDate(licenseDate)}</small>`;
 upgradeAgeInfo.style.display = 'block';
 
-return months;
+return months <= 36 ? '0-36' : '37-60';
 }
 
 function calculateMonths() {
@@ -505,7 +532,6 @@ document.getElementById('errorInfo').style.display = 'none';
 return ageRange;
 }
 
-// 原有價格計算
 function updatePrice() {
 const car = document.getElementById('car').value;
 const customer = document.getElementById('customer').value;
@@ -548,7 +574,6 @@ result.style.display = 'block';
 }
 }
 
-// 更新加購/升級計算
 function updateUpgradePrice() {
 const car = document.getElementById('upgradeCar').value;
 const customer = document.getElementById('upgradeCustomer').value;
@@ -564,27 +589,20 @@ result.style.display = 'none';
 return;
 }
 
-const months = calculateUpgradeAge();
-if (months === null || months > 60) {
+const ageRange = calculateUpgradeAge();
+if (ageRange === null || ageRange === '37-60' && upgradeType.includes('升級')) {
 result.className = 'upgrade-result error';
-result.innerHTML = '車齡超過加購60個月限制';
-result.style.display = 'block';
-return;
-}
-
-if (upgradeType.includes('升級') && months > 36) {
-result.className = 'upgrade-result error';
-result.innerHTML = `
+result.innerHTML = ageRange === null ? '車齡超過加購60個月限制' : `
 <div style="font-size: 18px;">❌ 升級僅限36個月內</div>
-<div style="font-size: 14px; margin-top: 10px;">目前車齡 ${months}個月，建議選擇加購項目</div>
+<div style="font-size: 14px; margin-top: 10px;">目前車齡超過36個月，建議選擇加購項目</div>
 <small style="font-size: 12px;">領牌日期：${formatTaiwanDate(licenseDate)}</small>
 `;
 result.style.display = 'block';
 return;
 }
 
-const upgradeOption = upgradeRules[contract]?.[upgradeType];
-if (!upgradeOption) {
+const upgradeOption = upgradeRules[car]?.[contract]?.[upgradeType];
+if (!upgradeOption || !upgradeOption[ageRange]) {
 result.className = 'upgrade-result error';
 result.innerHTML = `
 <div style="font-size: 18px;">❌ 無法加購/升級</div>
@@ -600,17 +618,17 @@ return;
 
 result.className = 'upgrade-result success';
 result.innerHTML = `
+<div>車型：${car}</div>
 <div>原始合約：${contract}</div>
 <div style="font-size: 16px; margin: 5px 0;">${upgradeType}</div>
 <div style="font-size: 14px; opacity: 0.9; margin-bottom: 10px;">→ ${upgradeOption.result}</div>
-<div style="font-size: 36px;">NT$${upgradeOption.price.toLocaleString()}</div>
+<div style="font-size: 36px;">NT$${upgradeOption[ageRange].toLocaleString()}</div>
 <div style="font-size: 24px; margin-top: 10px;">✅ 可購買</div>
 <small style="font-size: 12px; margin-top: 5px;">領牌日期：${formatTaiwanDate(licenseDate)}</small>
 `;
 result.style.display = 'block';
 }
 
-// 事件監聽
 document.querySelectorAll('#car, #customer, #months, #type, #years, #licenseDate').forEach(el => {
 el.addEventListener('change', updatePrice);
 });

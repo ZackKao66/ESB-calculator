@@ -803,11 +803,14 @@ document.getElementById('licenseDate').addEventListener('change', function() {
 // 🔥 初始化
 updateContractOptions();
 </script>
+
+<script>
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/sw.js');
   });
 }
 </script>
+
 </body>
 </html>

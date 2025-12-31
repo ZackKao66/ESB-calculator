@@ -301,6 +301,11 @@ h1 { font-size: 24px; }
 </div>
 
 <script>
+// 📱 LINE 一鍵分享
+function shareLine(text) {
+  const encodedText = encodeURIComponent(text);
+  window.open(`https://line.me/R/msg/text/?${encodedText}`, '_blank');
+}
 // 🌙 主題切換功能
 const themeToggle = document.getElementById('themeToggle');
 const body = document.body;

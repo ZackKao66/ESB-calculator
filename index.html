@@ -41,7 +41,6 @@ transition: all 0.3s ease;
 .container {
 background: var(--card-bg);
 padding: 30px;
-animation: fadeInUp 0.6s ease-out;
 border-radius: 15px;
 box-shadow: 0 6px 30px var(--shadow-color);
 transition: all 0.3s ease;
@@ -77,38 +76,38 @@ box-shadow: 0 6px 20px var(--shadow-color);
 }
 .date-row { display: flex; align-items: center; gap: 15px; margin-bottom: 10px; flex-wrap: wrap; }
 .date-label { font-weight: bold; color: var(--blue-color); white-space: nowrap; font-size: 16px; }
-.date-input { 
-  flex: 1; min-width: 200px; padding: 15px; font-size: 16px; 
-  border: 2px solid var(--border-color); border-radius: 8px;
-  background: var(--card-bg); color: var(--text-color);
+.date-input {
+flex: 1; min-width: 200px; padding: 15px; font-size: 16px;
+border: 2px solid var(--border-color); border-radius: 8px;
+background: var(--card-bg); color: var(--text-color);
 }
 .select-row { display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 20px; }
 
 select, .date-input {
-  flex: 1; min-width: 140px; padding: 15px; font-size: 16px;
-  border: 2px solid var(--border-color); border-radius: 8px;
-  background: var(--card-bg); color: var(--text-color);
-  transition: all 0.3s ease;
-  @supports (padding: max(0px)) {
-    padding-block: max(16px, 4vh);
-    padding-inline: 12px;
-  }
-  &::-webkit-calendar-picker-indicator {
-    cursor: pointer; opacity: 0.8; padding: 5px;
-    filter: brightness(1.2);
-  }
-  &::-webkit-datetime-edit {
-    padding: 8px;
-  }
-  &:active {
-    transform: scale(0.98);
-  }
+flex: 1; min-width: 140px; padding: 15px; font-size: 16px;
+border: 2px solid var(--border-color); border-radius: 8px;
+background: var(--card-bg); color: var(--text-color);
+transition: all 0.3s ease;
+@supports (padding: max(0px)) {
+padding-block: max(16px, 4vh);
+padding-inline: 12px;
+}
+&::-webkit-calendar-picker-indicator {
+cursor: pointer; opacity: 0.8; padding: 5px;
+filter: brightness(1.2);
+}
+&::-webkit-datetime-edit {
+padding: 8px;
+}
+&:active {
+transform: scale(0.98);
+}
 }
 
-select:focus, .date-input:focus { 
-  border-color: var(--blue-color); 
-  outline: none; 
-  box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.1); 
+select:focus, .date-input:focus {
+border-color: var(--blue-color);
+outline: none;
+box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.1);
 }
 .result, .upgrade-result {
 padding: 30px; border-radius: 15px;
@@ -179,21 +178,15 @@ font-size: 12px;
 line-height: 1.6;
 color: var(--disclaimer-color);
 }
-@keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-.result:not([style*="display: none"]), .upgrade-result:not([style*="display: none"]) { animation: bounceIn 0.4s ease-out; }
-@keyframes bounceIn { 0% { transform: scale(0.3); opacity: 0; } 50% { transform: scale(1.05); } 70% { transform: scale(0.9); } 100% { transform: scale(1); opacity: 1; } }
-.result:active, .upgrade-result:active { transform: scale(0.97); }
 @media (max-width: 768px) {
 .date-row { flex-direction: column; align-items: stretch; }
 .date-label { text-align: center; margin-bottom: 5px; }
 .select-row { flex-direction: column; }
-select, .date-input { 
-  font-size: clamp(16px, 5vw, 20px); 
-  min-height: 56px;
-  padding: 16px 12px;
-  margin-bottom: 12px;
-}
 .result, .upgrade-result { font-size: 24px; }
+select, .date-input {
+font-size: clamp(16px, 5vw, 20px);
+min-height: 50px;
+}
 h1 { font-size: 24px; }
 .theme-toggle { top: 10px; right: 10px; padding: 6px 12px; font-size: 14px; }
 }
@@ -301,11 +294,6 @@ h1 { font-size: 24px; }
 </div>
 
 <script>
-// 📱 LINE 一鍵分享
-function shareLine(text) {
-  const encodedText = encodeURIComponent(text);
-  window.open(`https://line.me/R/msg/text/?${encodedText}`, '_blank');
-}
 // 🌙 主題切換功能
 const themeToggle = document.getElementById('themeToggle');
 const body = document.body;
@@ -332,25 +320,25 @@ localStorage.setItem('theme', 'dark');
 
 // 🔥 行動裝置複製功能
 function addCopyToClipboard(element) {
-  element.addEventListener('click', async () => {
-    try {
-      await navigator.clipboard.writeText(element.textContent);
-      const original = element.innerHTML;
-      element.innerHTML = `${original}<br><small style="font-size:12px;opacity:0.8;">已複製✓</small>`;
-      setTimeout(() => element.innerHTML = original, 1500);
-    } catch(e) {
-      console.log('複製失敗');
-    }
-  });
+element.addEventListener('click', async () => {
+try {
+await navigator.clipboard.writeText(element.textContent);
+const original = element.innerHTML;
+element.innerHTML = `${original}<br><small style="font-size:12px;opacity:0.8;">已複製✓</small>`;
+setTimeout(() => element.innerHTML = original, 1500);
+} catch(e) {
+console.log('複製失敗');
+}
+});
 }
 
 function formatTaiwanDate(dateString) {
-  if (!dateString) return '';
-  const date = new Date(dateString + 'T00:00:00');
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  return `${year}年${month}月${day}日`;
+if (!dateString) return '';
+const date = new Date(dateString + 'T00:00:00');
+const year = date.getFullYear();
+const month = String(date.getMonth() + 1).padStart(2, '0');
+const day = String(date.getDate()).padStart(2, '0');
+return `${year}年${month}月${day}日`;
 }
 
 // 🔥 完整價格資料（一般合約）
@@ -394,83 +382,83 @@ const prices = {
 const upgradeRules = {
 'CX743': {
 '加值型一年': {
-  '加購加值型一年': { '0-36': 6400, '37-60': 7680, result: '加值型二年(24個月)' },
-  '加購加值型二年': { '0-36': 10000, '37-60': 12000, result: '加值型三年(36個月)' },
-  '升級全方位一年': { '0-36': 12900, result: '全方位一年(12個月)' },
-  '升級全方位二年': { '0-36': 26700, result: '全方位二年(24個月)' },
-  '升級全方位三年': { '0-36': 37700, result: '全方位三年(36個月)' }
+'加購加值型一年': { '0-36': 6400, '37-60': 7680, result: '加值型二年(24個月)' },
+'加購加值型二年': { '0-36': 10000, '37-60': 12000, result: '加值型三年(36個月)' },
+'升級全方位一年': { '0-36': 12900, result: '全方位一年(12個月)' },
+'升級全方位二年': { '0-36': 26700, result: '全方位二年(24個月)' },
+'升級全方位三年': { '0-36': 37700, result: '全方位三年(36個月)' }
 },
 '加值型二年': {
-  '加購加值型一年': { '0-36': 6400, '37-60': 7680, result: '加值型三年(36個月)' },
-  '升級全方位二年': { '0-36': 26700, result: '全方位二年(24個月)' },
-  '升級全方位三年': { '0-36': 37700, result: '全方位三年(36個月)' }
+'加購加值型一年': { '0-36': 6400, '37-60': 7680, result: '加值型三年(36個月)' },
+'升級全方位二年': { '0-36': 26700, result: '全方位二年(24個月)' },
+'升級全方位三年': { '0-36': 37700, result: '全方位三年(36個月)' }
 },
 '加值型三年': {
-  '升級全方位三年': { '0-36': 37700, result: '全方位三年(36個月)' }
+'升級全方位三年': { '0-36': 37700, result: '全方位三年(36個月)' }
 },
 '全方位一年': {
-  '加購全方位一年': { '0-36': 15500, '37-60': 18600, result: '全方位二年(24個月)' },
-  '加購全方位二年': { '0-36': 27600, '37-60': 33120, result: '全方位三年(36個月)' }
+'加購全方位一年': { '0-36': 15500, '37-60': 18600, result: '全方位二年(24個月)' },
+'加購全方位二年': { '0-36': 27600, '37-60': 33120, result: '全方位三年(36個月)' }
 },
 '全方位二年': {
-  '加購全方位一年': { '0-36': 15500, '37-60': 18600, result: '全方位二年(24個月)' }
+'加購全方位一年': { '0-36': 15500, '37-60': 18600, result: '全方位二年(24個月)' }
 },
 '全方位三年': {}
 },
 'C519': {
 '加值型一年': {
-  '加購加值型一年': { '0-36': 2730, '37-60': 3280, result: '加值型二年(24個月)' },
-  '加購加值型二年': { '0-36': 4040, '37-60': 4850, result: '加值型三年(36個月)' },
-  '升級全方位一年': { '0-36': 7450, result: '全方位一年(12個月)' },
-  '升級全方位二年': { '0-36': 15000, result: '全方位二年(24個月)' },
-  '升級全方位三年': { '0-36': 18800, result: '全方位三年(36個月)' }
+'加購加值型一年': { '0-36': 2730, '37-60': 3280, result: '加值型二年(24個月)' },
+'加購加值型二年': { '0-36': 4040, '37-60': 4850, result: '加值型三年(36個月)' },
+'升級全方位一年': { '0-36': 7450, result: '全方位一年(12個月)' },
+'升級全方位二年': { '0-36': 15000, result: '全方位二年(24個月)' },
+'升級全方位三年': { '0-36': 18800, result: '全方位三年(36個月)' }
 },
 '加值型二年': {
-  '加購加值型一年': { '0-36': 2730, '37-60': 3280, result: '加值型三年(36個月)' },
-  '升級全方位二年': { '0-36': 13600, result: '全方位二年(24個月)' },
-  '升級全方位三年': { '0-36': 17400, result: '全方位三年(36個月)' }
+'加購加值型一年': { '0-36': 2730, '37-60': 3280, result: '加值型三年(36個月)' },
+'升級全方位二年': { '0-36': 13600, result: '全方位二年(24個月)' },
+'升級全方位三年': { '0-36': 17400, result: '全方位三年(36個月)' }
 },
 '加值型三年': {
-  '升級全方位三年': { '0-36': 16500, result: '全方位三年(36個月)' }
+'升級全方位三年': { '0-36': 16500, result: '全方位三年(36個月)' }
 },
 '全方位一年': {
-  '加購全方位一年': { '0-36': 7350, '37-60': 8820, result: '全方位二年(24個月)' },
-  '加購全方位二年': { '0-36': 13650, '37-60': 16380, result: '全方位三年(36個月)' }
+'加購全方位一年': { '0-36': 7350, '37-60': 8820, result: '全方位二年(24個月)' },
+'加購全方位二年': { '0-36': 13650, '37-60': 16380, result: '全方位三年(36個月)' }
 },
 '全方位二年': {
-  '加購全方位一年': { '0-36': 13650, '37-60': 16380, result: '全方位二年(24個月)' }
+'加購全方位一年': { '0-36': 13650, '37-60': 16380, result: '全方位二年(24個月)' }
 },
 '全方位三年': {}
 },
 'CX482': {
 '加值型一年': {
-  '加購加值型一年': { '0-36': 4700, '37-60': 5640, result: '加值型二年(24個月)' },
-  '加購加值型二年': { '0-36': 6600, '37-60': 7920, result: '加值型三年(36個月)' },
-  '升級全方位一年': { '0-36': 11200, result: '全方位一年(12個月)' },
-  '升級全方位二年': { '0-36': 23200, result: '全方位二年(24個月)' },
-  '升級全方位三年': { '0-36': 32750, result: '全方位三年(36個月)' }
+'加購加值型一年': { '0-36': 4700, '37-60': 5640, result: '加值型二年(24個月)' },
+'加購加值型二年': { '0-36': 6600, '37-60': 7920, result: '加值型三年(36個月)' },
+'升級全方位一年': { '0-36': 11200, result: '全方位一年(12個月)' },
+'升級全方位二年': { '0-36': 23200, result: '全方位二年(24個月)' },
+'升級全方位三年': { '0-36': 32750, result: '全方位三年(36個月)' }
 },
 '加值型二年': {
-  '加購加值型一年': { '0-36': 4700, '37-60': 5640, result: '加值型三年(36個月)' },
-  '升級全方位二年': { '0-36': 21150, result: '全方位二年(24個月)' },
-  '升級全方位三年': { '0-36': 30700, result: '全方位三年(36個月)' }
+'加購加值型一年': { '0-36': 4700, '37-60': 5640, result: '加值型三年(36個月)' },
+'升級全方位二年': { '0-36': 21150, result: '全方位二年(24個月)' },
+'升級全方位三年': { '0-36': 30700, result: '全方位三年(36個月)' }
 },
 '加值型三年': {
-  '升級全方位三年': { '0-36': 28700, result: '全方位三年(36個月)' }
+'升級全方位三年': { '0-36': 28700, result: '全方位三年(36個月)' }
 },
 '全方位一年': {
-  '加購全方位一年': { '0-36': 14760, '37-60': 17710, result: '全方位二年(24個月)' },
-  '加購全方位二年': { '0-36': 24700, '37-60': 29640, result: '全方位三年(36個月)' }
+'加購全方位一年': { '0-36': 14760, '37-60': 17710, result: '全方位二年(24個月)' },
+'加購全方位二年': { '0-36': 24700, '37-60': 29640, result: '全方位三年(36個月)' }
 },
 '全方位二年': {
-  '加購全方位一年': { '0-36': 14760, '37-60': 17710, result: '全方位二年(24個月)' }
+'加購全方位一年': { '0-36': 14760, '37-60': 17710, result: '全方位二年(24個月)' }
 },
 '全方位三年': {}
 }
 };
 
-//addCopyToClipboard(document.getElementById('result'));
-//addCopyToClipboard(document.getElementById('upgradeResult'));
+addCopyToClipboard(document.getElementById('result'));
+addCopyToClipboard(document.getElementById('upgradeResult'));
 
 function calculateUpgradeAge() {
 const licenseDate = document.getElementById('licenseDate').value;
@@ -545,13 +533,10 @@ return ageRange;
 }
 
 function updatePrice() {
-  const car = document.getElementById('car').value;
-  const customer = document.getElementById('customer').value;
-  const licenseDate = document.getElementById('licenseDate').value
+const car = document.getElementById('car').value;
+const customer = document.getElementById('customer').value;
+const licenseDate = document.getElementById('licenseDate').value;
 let months;
-
-if (licenseDate) {
-    months
 
 if (licenseDate) {
 months = calculateMonths();
@@ -577,17 +562,11 @@ const priceKey = `${type}${years}`;
 const price = priceData?.[priceKey];
 
 if (price !== undefined) {
-  result.innerHTML = `
-  <div>${car} | ${customer} | ${months}個月 | ${type}${years}</div>
-  <div style="font-size: 36px; margin-top: 10px;">NT$${price.toLocaleString()}</div>
-  <div style="margin-top:15px;">
-    <button onclick="shareLine(\`${car} | ${customer} | ${months}個月 | ${type}${years}\\n💰 NT$${price.toLocaleString()}\\n📅 報價日期：${new Date().toLocaleDateString('zh-TW')}`)" 
-      style="background:#00b900;color:white;padding:12px 24px;border:none;border-radius:8px;font-size:16px;font-weight:bold;width:100%;box-shadow:0 4px 12px rgba(0,185,0,0.3);">
-      📱 LINE分享客戶
-    </button>
-  </div>
-  `;
-  result.style.display = 'block';
+result.innerHTML = `
+<div>${car} | ${customer} | ${months}個月 | ${type}${years}</div>
+<div style="font-size: 36px; margin-top: 10px;">NT$${price.toLocaleString()}</div>
+`;
+result.style.display = 'block';
 } else {
 result.innerHTML = '<div style="font-size: 20px;">無相關產品</div>';
 result.style.background = 'linear-gradient(135deg, #ff9800, #f57c00)';
@@ -646,12 +625,6 @@ result.innerHTML = `
 <div style="font-size: 36px;">NT$${upgradeOption[ageRange].toLocaleString()}</div>
 <div style="font-size: 24px; margin-top: 10px;">✅ 可購買</div>
 <small style="font-size: 12px; margin-top: 5px;">領牌日期：${formatTaiwanDate(licenseDate)}</small>
-<div style="margin-top:15px;">
-  <button onclick="shareLine(\`🛒福特安心保固升級報價\\n━━━━━━━━━━━━━━\\n車型：${car}\\n原始合約：${contract}\\n方案：${upgradeType}\\n→ ${upgradeOption.result}\\n💰 NT$${upgradeOption[ageRange].toLocaleString()}\\n📅 ${new Date().toLocaleDateString('zh-TW')}\\n━━━━━━━━━━━━━━\`)" 
-    style="background:#00b900;color:white;padding:12px 24px;border:none;border-radius:8px;font-size:16px;font-weight:bold;width:100%;box-shadow:0 4px 12px rgba(0,185,0,0.3);">
-    📱 LINE分享客戶
-  </button>
-</div>
 `;
 result.style.display = 'block';
 }

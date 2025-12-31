@@ -574,11 +574,17 @@ const priceKey = `${type}${years}`;
 const price = priceData?.[priceKey];
 
 if (price !== undefined) {
-result.innerHTML = `
-<div>${car} | ${customer} | ${months}個月 | ${type}${years}</div>
-<div style="font-size: 36px; margin-top: 10px;">NT$${price.toLocaleString()}</div>
-`;
-result.style.display = 'block';
+  result.innerHTML = `
+  <div>${car} | ${customer} | ${months}個月 | ${type}${years}</div>
+  <div style="font-size: 36px; margin-top: 10px;">NT$${price.toLocaleString()}</div>
+  <div style="margin-top:15px;">
+    <button onclick="shareLine(\`${car} | ${customer} | ${months}個月 | ${type}${years}\\n💰 NT$${price.toLocaleString()}\\n📅 報價日期：${new Date().toLocaleDateString('zh-TW')}`)" 
+      style="background:#00b900;color:white;padding:12px 24px;border:none;border-radius:8px;font-size:16px;font-weight:bold;width:100%;box-shadow:0 4px 12px rgba(0,185,0,0.3);">
+      📱 LINE分享客戶
+    </button>
+  </div>
+  `;
+  result.style.display = 'block';
 } else {
 result.innerHTML = '<div style="font-size: 20px;">無相關產品</div>';
 result.style.background = 'linear-gradient(135deg, #ff9800, #f57c00)';

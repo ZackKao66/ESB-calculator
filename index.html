@@ -47,9 +47,15 @@ transition: all 0.3s ease;
 margin-bottom: 30px;
 }
 .header { text-align: center; margin-bottom: 30px; }
-.section-subtitle {
-font-size: 20px; font-weight: bold; color: var(--blue-color);
-text-align: center; margin: 20px 0 15px 0;
+.section-title {
+font-size: 24px; font-weight: bold; color: var(--blue-color);
+text-align: center; margin: 30px 0 20px 0;
+position: relative;
+}
+.section-title::after {
+content: ''; position: absolute; bottom: -8px; left: 50%;
+transform: translateX(-50%); width: 60px; height: 3px;
+background: var(--blue-color); border-radius: 2px;
 }
 .theme-toggle {
 position: absolute;
@@ -134,16 +140,6 @@ color: white;
 height: 2px; background: linear-gradient(90deg, var(--blue-color), transparent);
 margin: 40px 0; border-radius: 2px;
 }
-.section-title {
-font-size: 24px; font-weight: bold; color: var(--blue-color);
-text-align: center; margin: 30px 0 20px 0;
-position: relative;
-}
-.section-title::after {
-content: ''; position: absolute; bottom: -8px; left: 50%;
-transform: translateX(-50%); width: 60px; height: 3px;
-background: var(--blue-color); border-radius: 2px;
-}
 .car-age-info {
 background: #e3f2fd; padding: 12px; border-radius: 8px;
 margin-bottom: 15px; font-size: 14px; color: #1976d2;
@@ -180,9 +176,6 @@ border-left-color: #66bb6a;
 background: #5f3d1a; color: #ffd699;
 border-left-color: #ff9800;
 }
-[data-theme="dark"] .section-subtitle {
-color: var(--blue-color);
-}
 h1 { color: var(--blue-color); margin: 0 0 10px 0; font-size: 28px; }
 .disclaimer {
 margin-top: 16px;
@@ -201,7 +194,6 @@ select, .date-input {
 }
 h1 { font-size: 24px; }
 .theme-toggle { top: 10px; right: 10px; padding: 6px 12px; font-size: 14px; }
-.section-subtitle { font-size: 18px; }
 }
 </style>
 </head>
@@ -222,7 +214,7 @@ h1 { font-size: 24px; }
 <div id="carAgeInfo" class="car-age-info"></div>
 <div id="errorInfo" class="error-info"></div>
 
-<!-- 🔥 新增一般合約價格查詢標題（已改為 section-title） -->
+<!-- 🔥 新增一般合約價格查詢標題 -->
 <div class="section-title">🎈一般合約價格查詢</div>
 
 <!-- 上方一般商品查詢 -->
@@ -230,6 +222,8 @@ h1 { font-size: 24px; }
 <select id="car">
 <option value="">選擇車型</option>
 <option value="CX743">CX743</option>
+<option value="C519">C519</option>
+<option value="CX482">CX482</option>
 </select>
 
 <select id="customer">
@@ -281,6 +275,8 @@ h1 { font-size: 24px; }
 <select id="upgradeCar">
 <option value="">選擇車型</option>
 <option value="CX743">CX743</option>
+<option value="C519">C519</option>
+<option value="CX482">CX482</option>
 </select>
 
 <select id="upgradeCustomer">
@@ -368,7 +364,7 @@ function formatTaiwanDate(dateString) {
   return `${year}年${month}月${day}日`;
 }
 
-// 原有價格資料
+// 🔥 更新後的完整價格資料（新增 C519 + CX482）
 const prices = {
 'CX743': {
 '個人戶': {
@@ -379,6 +375,28 @@ const prices = {
 },
 '非個人戶': {
 '0-3': {'加值型一年': 8500,'加值型二年': 12800,'加值型三年': 17300,'全方位一年': 20600,'全方位二年': 35100,'全方位三年': 46500}
+}
+},
+'C519': {
+'個人戶': {
+'0-3': {'加值型一年': 4200,'加值型二年': 5600,'加值型三年': 6500,'全方位一年': 9900,'全方位二年': 16600,'全方位三年': 19300},
+'4-12': {'加值型一年': 4400,'加值型二年': 5900,'加值型三年': 6850,'全方位一年': 10400,'全方位二年': 17450,'全方位三年': 20250},
+'13-30': {'加值型一年': 4850,'加值型二年': 6200,'加值型三年': 7200,'全方位一年': 10900,'全方位二年': 18300,'全方位三年': 21250},
+'31-36': {'加值型一年': 5580,'加值型二年': 7100,'加值型三年': 8000,'全方位一年': 11650,'全方位二年': 19200,'全方位三年': 23000}
+},
+'非個人戶': {
+'0-3': {'加值型一年': 5040,'加值型二年': 6720,'加值型三年': 7800,'全方位一年': 11880,'全方位二年': 19920,'全方位三年': 23160}
+}
+},
+'CX482': {
+'個人戶': {
+'0-3': {'加值型一年': 6150,'加值型二年': 8200,'加值型三年': 10200,'全方位一年': 14950,'全方位二年': 25350,'全方位三年': 33600},
+'4-12': {'加值型一年': 6450,'加值型二年': 8600,'加值型三年': 10700,'全方位一年': 15700,'全方位二年': 26600,'全方位三年': 35300},
+'13-30': {'加值型一年': 6850,'加值型二年': 9050,'加值型三年': 11250,'全方位一年': 16500,'全方位二年': 27950,'全方位三年': 37050},
+'31-36': {'加值型一年': 7800,'加值型二年': 10050,'加值型三年': 12100,'全方位一年': 17350,'全方位二年': 29350,'全方位三年': 38900}
+},
+'非個人戶': {
+'0-3': {'加值型一年': 7400,'加值型二年': 9850,'加值型三年': 12250,'全方位一年': 17950,'全方位二年': 30400,'全方位三年': 40300}
 }
 }
 };

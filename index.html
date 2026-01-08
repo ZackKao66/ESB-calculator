@@ -528,69 +528,76 @@ return months <= 36 ? '0-36' : '37-60';
 }
 
 function calculateMonths() {
-const licenseDate = document.getElementById('licenseDate').value;
-if (!licenseDate) return '';
+    const licenseDate = document.getElementById('licenseDate').value;
+    if (!licenseDate) return '';
 
-const today = new Date();
-const license = new Date(licenseDate + 'T00:00:00');
-const days = Math.floor((today - license) / (1000 * 60 * 60 * 24));
-const months = Math.ceil(days / 30.44);
+    const today = new Date();
+    const license = new Date(licenseDate + 'T00:00:00+08:00');
+    const diffTime = today - license;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));  // ✅ 天數無條件進位
+    const diffMonths = Math.ceil(diffDays / 30.4375);  // ✅ 月數無條件進位（精準）
 
-if (months > 36) {
-const errorInfo = document.getElementById('errorInfo');
-errorInfo.innerHTML = `車齡 ${months}個月 超過36個月限制<br><small>領牌日期：${formatTaiwanDate(licenseDate)}</small>`;
-errorInfo.style.display = 'block';
-document.getElementById('carAgeInfo').style.display = 'none';
-return null;
-}
+    console.log(`天數: ${diffDays}, 月數: ${diffMonths}`);  // ✅ 除錯用
 
-let ageRange = '';
-if (months <= 3) ageRange = '0-3';
-else if (months <= 12) ageRange = '4-12';
-else if (months <= 30) ageRange = '13-30';
-else ageRange = '31-36';
+    if (diffMonths > 36) {
+        const errorInfo = document.getElementById('errorInfo');
+        errorInfo.innerHTML = `車齡 ${diffMonths}個月 超過36個月限制<br><small>領牌日期：${formatTaiwanDate(licenseDate)}</small>`;
+        errorInfo.style.display = 'block';
+        document.getElementById('carAgeInfo').style.display = 'none';
+        return null;  // ✅ 返回 null 而非空字串
+    }
 
-const customer = document.getElementById('customer').value;
-if (customer === '非個人戶' && days > 30) {
-const errorInfo = document.getElementById('errorInfo');
-errorInfo.innerHTML = `非個人戶僅限領牌30天內購買，目前車齡 ${days}天，已超過限制<br><small>領牌日期：${formatTaiwanDate(licenseDate)}</small>`;
-errorInfo.style.display = 'block';
-document.getElementById('carAgeInfo').style.display = 'none';
-return null;
-}
+    let ageRange = '';
+    if (diffMonths <= 3) ageRange = '0-3';
+    else if (diffMonths <= 12) ageRange = '4-12';
+    else if (diffMonths <= 30) ageRange = '13-30';
+    else ageRange = '31-36';
 
-const carAgeInfo = document.getElementById('carAgeInfo');
-carAgeInfo.innerHTML = `計算車齡：${days}天（${months}個月）→ ${ageRange}個月區間<br><small>領牌日期：${formatTaiwanDate(licenseDate)}</small>`;
-carAgeInfo.style.display = 'block';
-document.getElementById('errorInfo').style.display = 'none';
+    // 非個人戶限制
+    const customer = document.getElementById('customer').value;
+    if (customer === '非個人戶' && diffDays > 30) {
+        const errorInfo = document.getElementById('errorInfo');
+        errorInfo.innerHTML = `非個人戶僅限領牌30天內，目前車齡 ${diffDays}天<br><small>領牌日期：${formatTaiwanDate(licenseDate)}</small>`;
+        errorInfo.style.display = 'block';
+        return null;
+    }
 
-return ageRange;
+    // ✅ 顯示車齡
+    const carAgeInfo = document.getElementById('carAgeInfo');
+    carAgeInfo.innerHTML = `車齡：${diffDays}天（${diffMonths}個月）→ ${ageRange}<br><small>領牌日期：${formatTaiwanDate(licenseDate)}</small>`;
+    carAgeInfo.style.display = 'block';
+    document.getElementById('errorInfo').style.display = 'none';
+
+    return ageRange;  // ✅ 返回正確區間
 }
 
 function updatePrice() {
-const car = document.getElementById('car').value;
-const customer = document.getElementById('customer').value;
-const licenseDate = document.getElementById('licenseDate').value;
-let months;
+    const car = document.getElementById('car').value;
+    const customer = document.getElementById('customer').value;
+    const licenseDate = document.getElementById('licenseDate').value;
+    let months;
 
-if (licenseDate) {
-months = calculateMonths();
-if (months === null) {
-document.getElementById('result').style.display = 'none';
-return;
-}
-} else {
-months = document.getElementById('months').value;
-}
+    // 🔥 先計算車齡（修正順序）
+    if (licenseDate) {
+        months = calculateMonths();  // 會自動顯示車齡資訊
+        if (months === null) {  // ✅ 檢查 null
+            document.getElementById('result').style.display = 'none';
+            return;
+        }
+    } else {
+        months = document.getElementById('months').value;
+    }
 
-const type = document.getElementById('type').value;
-const years = document.getElementById('years').value;
-const result = document.getElementById('result');
+    const type = document.getElementById('type').value;
+    const years = document.getElementById('years').value;
+    const result = document.getElementById('result');
 
-if (!car || !customer || !months || !type || !years) {
-result.style.display = 'none';
-return;
-}
+    if (!car || !customer || !months || !type || !years) {
+        result.style.display = 'none';
+        return;
+    }
+
+    // 🔥 其餘價格查詢邏輯保持不變...
 
 const priceData = prices[car]?.[customer]?.[months];
 const priceKey = `${type}${years}`;

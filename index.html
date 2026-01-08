@@ -455,118 +455,69 @@ function updateContractOptions() {
 }
 
 // 🔥 更新加購/升級下拉選單（自動篩選）
-function calculateCarAge(licenseDateStr) {
-    if (!licenseDateStr) return null;
-    
-    const today = new Date();
-    const licenseDate = new Date(licenseDateStr + 'T00:00:00+08:00'); // 台灣時區
-    const diffTime = today - licenseDate;
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); // 天數無條件進位
-    const diffMonths = Math.ceil(diffDays / 30.4375); // 月數精準無條件進位
-    
-    console.log(`領牌日期: ${licenseDateStr}, 天數: ${diffDays}, 月數: ${diffMonths}`);
-    
-    return { days: diffDays, months: diffMonths };
+const today = new Date();
+const license = new Date(licenseDate + 'T00:00:00');
+const months = Math.floor((today - license) / (1000 * 60 * 60 * 24 * 30.44));
+const days = Math.floor((today - license) / (1000 * 60 * 60 * 24));
+
+const upgradeAgeInfo = document.getElementById('upgradeAgeInfo');
+let status = '';
+
+if (months > 60) {
+status = `❌ 車齡 ${months}個月 超過加購60個月限制`;
+upgradeAgeInfo.className = 'upgrade-age-info error';
+} else if (months > 36) {
+status = `⚠️ 車齡 ${months}個月 僅限加購（升級限36個月內）`;
+upgradeAgeInfo.className = 'upgrade-age-info warning';
+} else {
+status = `✅ 車齡 ${months}個月 可加購/升級`;
+upgradeAgeInfo.className = 'upgrade-age-info';
 }
 
-// 🔥 修復版：取得車齡區間
-function getAgeRange(ageInfo) {
-    if (!ageInfo) return null;
-    const months = ageInfo.months;
-    
-    if (months <= 3) return '0-3';
-    if (months <= 12) return '4-12';
-    if (months <= 30) return '13-30';
-    if (months <= 36) return '31-36';
-    return null; // 超過36個月
+upgradeAgeInfo.innerHTML = `目前車齡：${days}天（${months}個月）→ ${status}<br><small>領牌日期：${formatTaiwanDate(licenseDate)}</small>`;
+upgradeAgeInfo.style.display = 'block';
+
+return months <= 36 ? '0-36' : '37-60';
 }
 
-// 🔥 修復版：更新車齡顯示 + 錯誤檢查
-function updateCarAgeDisplay() {
-    const licenseDate = document.getElementById('licenseDate').value;
-    const customer = document.getElementById('customer').value;
-    const carAgeInfo = document.getElementById('carAgeInfo');
-    const errorInfo = document.getElementById('errorInfo');
-    
-    carAgeInfo.style.display = 'none';
-    errorInfo.style.display = 'none';
-    
-    if (!licenseDate) return null;
-    
-    const ageInfo = calculateCarAge(licenseDate);
-    if (!ageInfo) return null;
-    
-    const ageRange = getAgeRange(ageInfo);
-    
-    // 非個人戶30天限制
-    if (customer === '非個人戶' && ageInfo.days > 30) {
-        errorInfo.innerHTML = `❌ 非個人戶超過30天限制（目前${ageInfo.days}天）`;
-        errorInfo.style.display = 'block';
-        return null;
-    }
-    
-    if (!ageRange) {
-        errorInfo.innerHTML = `❌ 車齡${ageInfo.months}個月超過36個月限制`;
-        errorInfo.style.display = 'block';
-        return null;
-    }
+function calculateMonths() {
+const licenseDate = document.getElementById('licenseDate').value;
+if (!licenseDate) return '';
 
-function updatePrice() {
-const car = document.getElementById('car').value;
+const today = new Date();
+const license = new Date(licenseDate + 'T00:00:00');
+const months = Math.floor((today - license) / (1000 * 60 * 60 * 24 * 30.44));
+const days = Math.floor((today - license) / (1000 * 60 * 60 * 24));
+
+if (months > 36) {
+const errorInfo = document.getElementById('errorInfo');
+errorInfo.innerHTML = `車齡 ${months}個月 超過36個月限制<br><small>領牌日期：${formatTaiwanDate(licenseDate)}</small>`;
+errorInfo.style.display = 'block';
+document.getElementById('carAgeInfo').style.display = 'none';
+return null;
+}
+
+let ageRange = '';
+if (months <= 3) ageRange = '0-3';
+else if (months <= 12) ageRange = '4-12';
+else if (months <= 30) ageRange = '13-30';
+else ageRange = '31-36';
+
 const customer = document.getElementById('customer').value;
-const licenseDate = document.getElementById('licenseDate').value;
-let months;
-
-if (licenseDate) {
-months = calculateMonths();
-if (months === null) {
-document.getElementById('result').style.display = 'none';
-return;
-}
-} else {
-months = document.getElementById('months').value;
+if (customer === '非個人戶' && days > 30) {
+const errorInfo = document.getElementById('errorInfo');
+errorInfo.innerHTML = `非個人戶僅限領牌30天內購買，目前車齡 ${days}天，已超過限制<br><small>領牌日期：${formatTaiwanDate(licenseDate)}</small>`;
+errorInfo.style.display = 'block';
+document.getElementById('carAgeInfo').style.display = 'none';
+return null;
 }
 
-const type = document.getElementById('type').value;
-const years = document.getElementById('years').value;
-const result = document.getElementById('result');
+const carAgeInfo = document.getElementById('carAgeInfo');
+carAgeInfo.innerHTML = `計算車齡：${days}天（${months}個月）→ ${ageRange}個月區間<br><small>領牌日期：${formatTaiwanDate(licenseDate)}</small>`;
+carAgeInfo.style.display = 'block';
+document.getElementById('errorInfo').style.display = 'none';
 
-if (!car || !customer || !months || !type || !years) {
-result.style.display = 'none';
-return;
-}
-
-const priceData = prices[car]?.[customer]?.[months];
-const priceKey = `${type}${years}`;
-const price = priceData?.[priceKey];
-
-if (price !== undefined) {
-result.innerHTML = `
-<div>${car} | ${customer} | ${months}個月 | ${type}${years}</div>
-<div style="font-size: 36px; margin-top: 10px;">NT$${price.toLocaleString()}</div>
-`;
-result.style.display = 'block';
-} else {
-result.innerHTML = '<div style="font-size: 20px;">無相關產品</div>';
-result.style.background = 'linear-gradient(135deg, #ff9800, #f57c00)';
-result.style.display = 'block';
-}
-}
-
-// 🔥 修改版：智能加購/升級價格計算
-function updateUpgradePrice() {
-const car = document.getElementById('upgradeCar').value;
-const customer = document.getElementById('upgradeCustomer').value;
-const contract = document.getElementById('contract').value;
-const upgradeType = document.getElementById('upgradeType').value;
-const licenseDate = document.getElementById('licenseDate').value;
-const result = document.getElementById('upgradeResult');
-
-if (!car || !customer || !contract || !upgradeType || !licenseDate) {
-result.className = 'upgrade-result';
-result.innerHTML = '請選擇完整方案（必須選擇原始合約）';
-result.style.display = 'none';
-return;
+return ageRange;
 }
 
 const ageRange = calculateUpgradeAge();

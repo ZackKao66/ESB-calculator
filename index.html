@@ -895,10 +895,9 @@ document.getElementById('upgradeType').value = '';
 updateUpgradePrice();
 });
 
-document.getElementById('upgradeType').addEventListener('change', updateUpgradePrice);
 document.getElementById('licenseDate').addEventListener('change', function() {
-updateUpgradeOptions();
-updateUpgradePrice();
+calculateMonths();  // ✅ 先計算車齡 + 顯示區間
+updatePrice();      // ✅ 再查價格
 });
 
 // 🔥 初始化

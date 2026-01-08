@@ -39,37 +39,37 @@
 
 /* 🔥 新增自動建議樣式 */
 .auto-suggest {
-  position: relative;
-  margin-bottom: 15px;
+position: relative;
+margin-bottom: 15px;
 }
 .suggest-list {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  background: var(--card-bg);
-  border: 2px solid var(--border-color);
-  border-top: none;
-  border-radius: 0 0 8px 8px;
-  max-height: 200px;
-  overflow-y: auto;
-  z-index: 1000;
-  box-shadow: 0 6px 20px var(--shadow-color);
-  display: none;
+position: absolute;
+top: 100%;
+left: 0;
+right: 0;
+background: var(--card-bg);
+border: 2px solid var(--border-color);
+border-top: none;
+border-radius: 0 0 8px 8px;
+max-height: 200px;
+overflow-y: auto;
+z-index: 1000;
+box-shadow: 0 6px 20px var(--shadow-color);
+display: none;
 }
 .suggest-item {
-  padding: 12px 15px;
-  cursor: pointer;
-  font-size: 16px;
-  border-bottom: 1px solid var(--border-color);
-  transition: all 0.2s ease;
+padding: 12px 15px;
+cursor: pointer;
+font-size: 16px;
+border-bottom: 1px solid var(--border-color);
+transition: all 0.2s ease;
 }
 .suggest-item:hover, .suggest-item.selected {
-  background: var(--blue-color);
-  color: white;
+background: var(--blue-color);
+color: white;
 }
 .suggest-item:last-child {
-  border-bottom: none;
+border-bottom: none;
 }
 
 body {
@@ -226,31 +226,31 @@ color: var(--disclaimer-color);
 .date-label { text-align: center; margin-bottom: 8px; font-size: 18px; }
 .select-row { flex-direction: column; }
 
-select, .date-input { 
-font-size: 18px !important; 
-min-height: 60px !important;  
-padding: 18px 16px !important;  
-margin-bottom: 16px !important;  
-border-radius: 12px !important;  
-box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;  
+select, .date-input {
+font-size: 18px !important;
+min-height: 60px !important;
+padding: 18px 16px !important;
+margin-bottom: 16px !important;
+border-radius: 12px !important;
+box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
 }
-  
-.result, .upgrade-result { 
-font-size: 26px !important; 
+
+.result, .upgrade-result {
+font-size: 26px !important;
 min-height: 120px !important;
 border-radius: 20px !important;
 }
 h1 { font-size: 26px; }
-  .theme-toggle { top: 12px; right: 12px; padding: 10px 16px; font-size: 16px; }
-  .suggest-list {
-    position: fixed;
-    left: 20px;
-    right: 20px;
-    top: auto;
-    bottom: 100px;
-    border-radius: 12px;
-    max-height: 300px;
-  }
+.theme-toggle { top: 12px; right: 12px; padding: 10px 16px; font-size: 16px; }
+.suggest-list {
+position: fixed;
+left: 20px;
+right: 20px;
+top: auto;
+bottom: 100px;
+border-radius: 12px;
+max-height: 300px;
+}
 }
 </style>
 </head>
@@ -407,58 +407,105 @@ return `${year}年${month}月${day}日`;
 
 // 🔥 ✅ 修正版：獲取所有可選合約（顯示具體月數）
 function getAllContracts(car) {
-  return [
-    {value: '加值型一年', text: '加值型一年(12個月)'},
-    {value: '加值型二年', text: '加值型二年(24個月)'},
-    {value: '加值型三年', text: '加值型三年(36個月)'},
-    {value: '全方位一年', text: '全方位一年(12個月)'},
-    {value: '全方位二年', text: '全方位二年(24個月)'},
-    {value: '全方位三年', text: '全方位三年(36個月)'}
-  ].filter(c => upgradeRules[car]?.[c.value]);
+return [
+{value: '加值型一年', text: '加值型一年(12個月)'},
+{value: '加值型二年', text: '加值型二年(24個月)'},
+{value: '加值型三年', text: '加值型三年(36個月)'},
+{value: '全方位一年', text: '全方位一年(12個月)'},
+{value: '全方位二年', text: '全方位二年(24個月)'},
+{value: '全方位三年', text: '全方位三年(36個月)'}
+].filter(c => upgradeRules[car]?.[c.value]);
 }
 
 // 🔥 根據原始合約和車齡自動篩選可購買項目
 function getAvailableUpgrades(car, contract, ageRange) {
-  const options = upgradeRules[car]?.[contract] || {};
-  const available = [];
-  
-  for (const upgradeType in options) {
-    const data = options[upgradeType];
-    if (data[ageRange]) {
-      available.push({
-        value: upgradeType,
-        text: `${upgradeType} (NT$${data[ageRange].toLocaleString()})`,
-        result: data.result,
-        price: data[ageRange]
-      });
-    }
-  }
-  
-  console.log(`車型:${car}, 原始合約:${contract}, 車齡:${ageRange}, 可選項目:`, available.map(a => a.value));
-  return available;
+const options = upgradeRules[car]?.[contract] || {};
+const available = [];
+
+for (const upgradeType in options) {
+const data = options[upgradeType];
+if (data[ageRange]) {
+available.push({
+value: upgradeType,
+text: `${upgradeType} (NT$${data[ageRange].toLocaleString()})`,
+result: data.result,
+price: data[ageRange]
+});
+}
+}
+
+console.log(`車型:${car}, 原始合約:${contract}, 車齡:${ageRange}, 可選項目:`, available.map(a => a.value));
+return available;
 }
 
 // 🔥 更新原始合約下拉選單（顯示具體月數）
 function updateContractOptions() {
-  const car = document.getElementById('upgradeCar').value;
-  const contractSelect = document.getElementById('contract');
-  
-  contractSelect.innerHTML = '<option value="">1️⃣ 先選原始合約</option>';
-  if (car && upgradeRules[car]) {
-    getAllContracts(car).forEach(item => {
-      const option = document.createElement('option');
-      option.value = item.value;
-      option.textContent = item.text;
-      contractSelect.appendChild(option);
-    });
-  }
+const car = document.getElementById('upgradeCar').value;
+const contractSelect = document.getElementById('contract');
+
+contractSelect.innerHTML = '<option value="">1️⃣ 先選原始合約</option>';
+if (car && upgradeRules[car]) {
+getAllContracts(car).forEach(item => {
+const option = document.createElement('option');
+option.value = item.value;
+option.textContent = item.text;
+contractSelect.appendChild(option);
+});
+}
 }
 
 // 🔥 更新加購/升級下拉選單（自動篩選）
+function updateUpgradeOptions() {
+const car = document.getElementById('upgradeCar').value;
+const contract = document.getElementById('contract').value;
+const licenseDate = document.getElementById('licenseDate').value;
+const upgradeTypeSelect = document.getElementById('upgradeType');
+
+upgradeTypeSelect.innerHTML = '<option value="">2️⃣ 可購買項目自動顯示</option>';
+
+if (!car || !contract || !licenseDate) return;
+
+const ageRange = calculateUpgradeAge();
+if (!ageRange) return;
+
+const available = getAvailableUpgrades(car, contract, ageRange);
+
+if (available.length === 0) {
+upgradeTypeSelect.innerHTML = '<option value="">❌ 無可購買項目</option>';
+return;
+}
+
+available.forEach(item => {
+const option = document.createElement('option');
+option.value = item.value;
+option.textContent = item.text;
+option.dataset.price = item.price;
+option.dataset.result = item.result;
+upgradeTypeSelect.appendChild(option);
+});
+
+// 自動選擇第一個（如果只有一個）
+if (available.length === 1) {
+upgradeTypeSelect.value = available[0].value;
+updateUpgradePrice();
+}
+}
+
+addCopyToClipboard(document.getElementById('result'));
+addCopyToClipboard(document.getElementById('upgradeResult'));
+
+function calculateUpgradeAge() {
+const licenseDate = document.getElementById('licenseDate').value;
+if (!licenseDate) {
+document.getElementById('upgradeAgeInfo').style.display = 'none';
+return null;
+}
+
+function getUpgradeAgeStatus(licenseDate) {
 const today = new Date();
 const license = new Date(licenseDate + 'T00:00:00');
-const months = Math.floor((today - license) / (1000 * 60 * 60 * 24 * 30.44));
 const days = Math.floor((today - license) / (1000 * 60 * 60 * 24));
+const months = Math.ceil(days / 30.44);
 
 const upgradeAgeInfo = document.getElementById('upgradeAgeInfo');
 let status = '';
@@ -486,8 +533,8 @@ if (!licenseDate) return '';
 
 const today = new Date();
 const license = new Date(licenseDate + 'T00:00:00');
-const months = Math.floor((today - license) / (1000 * 60 * 60 * 24 * 30.44));
 const days = Math.floor((today - license) / (1000 * 60 * 60 * 24));
+const months = Math.ceil(days / 30.44);
 
 if (months > 36) {
 const errorInfo = document.getElementById('errorInfo');
@@ -518,6 +565,64 @@ carAgeInfo.style.display = 'block';
 document.getElementById('errorInfo').style.display = 'none';
 
 return ageRange;
+}
+
+function updatePrice() {
+const car = document.getElementById('car').value;
+const customer = document.getElementById('customer').value;
+const licenseDate = document.getElementById('licenseDate').value;
+let months;
+
+if (licenseDate) {
+months = calculateMonths();
+if (months === null) {
+document.getElementById('result').style.display = 'none';
+return;
+}
+} else {
+months = document.getElementById('months').value;
+}
+
+const type = document.getElementById('type').value;
+const years = document.getElementById('years').value;
+const result = document.getElementById('result');
+
+if (!car || !customer || !months || !type || !years) {
+result.style.display = 'none';
+return;
+}
+
+const priceData = prices[car]?.[customer]?.[months];
+const priceKey = `${type}${years}`;
+const price = priceData?.[priceKey];
+
+if (price !== undefined) {
+result.innerHTML = `
+<div>${car} | ${customer} | ${months}個月 | ${type}${years}</div>
+<div style="font-size: 36px; margin-top: 10px;">NT$${price.toLocaleString()}</div>
+`;
+result.style.display = 'block';
+} else {
+result.innerHTML = '<div style="font-size: 20px;">無相關產品</div>';
+result.style.background = 'linear-gradient(135deg, #ff9800, #f57c00)';
+result.style.display = 'block';
+}
+}
+
+// 🔥 修改版：智能加購/升級價格計算
+function updateUpgradePrice() {
+const car = document.getElementById('upgradeCar').value;
+const customer = document.getElementById('upgradeCustomer').value;
+const contract = document.getElementById('contract').value;
+const upgradeType = document.getElementById('upgradeType').value;
+const licenseDate = document.getElementById('licenseDate').value;
+const result = document.getElementById('upgradeResult');
+
+if (!car || !customer || !contract || !upgradeType || !licenseDate) {
+result.className = 'upgrade-result';
+result.innerHTML = '請選擇完整方案（必須選擇原始合約）';
+result.style.display = 'none';
+return;
 }
 
 const ageRange = calculateUpgradeAge();
@@ -769,24 +874,24 @@ el.addEventListener('change', updatePrice);
 
 // 🔥 新增智能加購/升級事件監聽器
 document.getElementById('upgradeCar').addEventListener('change', function() {
-  updateContractOptions();
-  document.getElementById('contract').value = '';
-  document.getElementById('upgradeType').value = '';
-  updateUpgradePrice();
+updateContractOptions();
+document.getElementById('contract').value = '';
+document.getElementById('upgradeType').value = '';
+updateUpgradePrice();
 });
 
 document.getElementById('upgradeCustomer').addEventListener('change', updateUpgradePrice);
 
 document.getElementById('contract').addEventListener('change', function() {
-  updateUpgradeOptions();
-  document.getElementById('upgradeType').value = '';
-  updateUpgradePrice();
+updateUpgradeOptions();
+document.getElementById('upgradeType').value = '';
+updateUpgradePrice();
 });
 
 document.getElementById('upgradeType').addEventListener('change', updateUpgradePrice);
 document.getElementById('licenseDate').addEventListener('change', function() {
-  updateUpgradeOptions();
-  updateUpgradePrice();
+updateUpgradeOptions();
+updateUpgradePrice();
 });
 
 // 🔥 初始化
@@ -795,9 +900,9 @@ updateContractOptions();
 
 <script>
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js');
-  });
+window.addEventListener('load', () => {
+navigator.serviceWorker.register('/sw.js');
+});
 }
 </script>
 

@@ -455,117 +455,61 @@ function updateContractOptions() {
 }
 
 // 🔥 更新加購/升級下拉選單（自動篩選）
-function updateUpgradeOptions() {
-  const car = document.getElementById('upgradeCar').value;
-  const contract = document.getElementById('contract').value;
-  const licenseDate = document.getElementById('licenseDate').value;
-  const upgradeTypeSelect = document.getElementById('upgradeType');
-  
-  upgradeTypeSelect.innerHTML = '<option value="">2️⃣ 可購買項目自動顯示</option>';
-  
-  if (!car || !contract || !licenseDate) return;
-  
-  const ageRange = calculateUpgradeAge();
-  if (!ageRange) return;
-  
-  const available = getAvailableUpgrades(car, contract, ageRange);
-  
-  if (available.length === 0) {
-    upgradeTypeSelect.innerHTML = '<option value="">❌ 無可購買項目</option>';
-    return;
-  }
-  
-  available.forEach(item => {
-    const option = document.createElement('option');
-    option.value = item.value;
-    option.textContent = item.text;
-    option.dataset.price = item.price;
-    option.dataset.result = item.result;
-    upgradeTypeSelect.appendChild(option);
-  });
-  
-  // 自動選擇第一個（如果只有一個）
-  if (available.length === 1) {
-    upgradeTypeSelect.value = available[0].value;
-    updateUpgradePrice();
-  }
+function calculateCarAge(licenseDateStr) {
+    if (!licenseDateStr) return null;
+    
+    const today = new Date();
+    const licenseDate = new Date(licenseDateStr + 'T00:00:00+08:00'); // 台灣時區
+    const diffTime = today - licenseDate;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); // 天數無條件進位
+    const diffMonths = Math.ceil(diffDays / 30.4375); // 月數精準無條件進位
+    
+    console.log(`領牌日期: ${licenseDateStr}, 天數: ${diffDays}, 月數: ${diffMonths}`);
+    
+    return { days: diffDays, months: diffMonths };
 }
 
-addCopyToClipboard(document.getElementById('result'));
-addCopyToClipboard(document.getElementById('upgradeResult'));
-
-function calculateUpgradeAge() {
-const licenseDate = document.getElementById('licenseDate').value;
-if (!licenseDate) {
-document.getElementById('upgradeAgeInfo').style.display = 'none';
-return null;
+// 🔥 修復版：取得車齡區間
+function getAgeRange(ageInfo) {
+    if (!ageInfo) return null;
+    const months = ageInfo.months;
+    
+    if (months <= 3) return '0-3';
+    if (months <= 12) return '4-12';
+    if (months <= 30) return '13-30';
+    if (months <= 36) return '31-36';
+    return null; // 超過36個月
 }
 
-function getUpgradeAgeStatus(licenseDate) {
-  const today = new Date();
-  const license = new Date(licenseDate + 'T00:00:00');
-  const days = Math.floor((today - license) / (1000 * 60 * 60 * 24));
-  const months = Math.ceil(days / 30.44);
-
-  const upgradeAgeInfo = document.getElementById('upgradeAgeInfo');
-  let status = '';
-
-  if (months > 60) {
-    status = `❌ 車齡 ${months}個月 超過加購60個月限制`;
-    upgradeAgeInfo.className = 'upgrade-age-info error';
-  } else if (months > 36) {
-    status = `⚠️ 車齡 ${months}個月 僅限加購（升級限36個月內）`;
-    upgradeAgeInfo.className = 'upgrade-age-info warning';
-  } else {
-    status = `✅ 車齡 ${months}個月 可加購/升級`;
-    upgradeAgeInfo.className = 'upgrade-age-info';
-  }
-
-  upgradeAgeInfo.innerHTML = `目前車齡：${days}天（${months}個月）→ ${status}<br><small>領牌日期：${formatTaiwanDate(licenseDate)}</small>`;
-  upgradeAgeInfo.style.display = 'block';
-
-  return months <= 36 ? '0-36' : '37-60';
-}
-
-function calculateMonths() {
-  const licenseDate = document.getElementById('licenseDate').value;
-  if (!licenseDate) return '';
-
-  const today = new Date();
-  const license = new Date(licenseDate + 'T00:00:00');
-  const days = Math.floor((today - license) / (1000 * 60 * 60 * 24));
-  const months = Math.ceil(days / 30.44);
-
-  if (months > 36) {
+// 🔥 修復版：更新車齡顯示 + 錯誤檢查
+function updateCarAgeDisplay() {
+    const licenseDate = document.getElementById('licenseDate').value;
+    const customer = document.getElementById('customer').value;
+    const carAgeInfo = document.getElementById('carAgeInfo');
     const errorInfo = document.getElementById('errorInfo');
-    errorInfo.innerHTML = `車齡 ${months}個月 超過36個月限制<br><small>領牌日期：${formatTaiwanDate(licenseDate)}</small>`;
-    errorInfo.style.display = 'block';
-    document.getElementById('carAgeInfo').style.display = 'none';
-    return null;
-  }
-
-  let ageRange = '';
-  if (months <= 3) ageRange = '0-3';
-  else if (months <= 12) ageRange = '4-12';
-  else if (months <= 30) ageRange = '13-30';
-  else ageRange = '31-36';
-
-  const customer = document.getElementById('customer').value;
-  if (customer === '非個人戶' && days > 30) {
-    const errorInfo = document.getElementById('errorInfo');
-    errorInfo.innerHTML = `非個人戶僅限領牌30天內購買，目前車齡 ${days}天，已超過限制<br><small>領牌日期：${formatTaiwanDate(licenseDate)}</small>`;
-    errorInfo.style.display = 'block';
-    document.getElementById('carAgeInfo').style.display = 'none';
-    return null;
-  }
-
-  const carAgeInfo = document.getElementById('carAgeInfo');
-  carAgeInfo.innerHTML = `計算車齡：${days}天（${months}個月）→ ${ageRange}個月區間<br><small>領牌日期：${formatTaiwanDate(licenseDate)}</small>`;
-  carAgeInfo.style.display = 'block';
-  document.getElementById('errorInfo').style.display = 'none';
-
-  return ageRange;
-}
+    
+    carAgeInfo.style.display = 'none';
+    errorInfo.style.display = 'none';
+    
+    if (!licenseDate) return null;
+    
+    const ageInfo = calculateCarAge(licenseDate);
+    if (!ageInfo) return null;
+    
+    const ageRange = getAgeRange(ageInfo);
+    
+    // 非個人戶30天限制
+    if (customer === '非個人戶' && ageInfo.days > 30) {
+        errorInfo.innerHTML = `❌ 非個人戶超過30天限制（目前${ageInfo.days}天）`;
+        errorInfo.style.display = 'block';
+        return null;
+    }
+    
+    if (!ageRange) {
+        errorInfo.innerHTML = `❌ 車齡${ageInfo.months}個月超過36個月限制`;
+        errorInfo.style.display = 'block';
+        return null;
+    }
 
 function updatePrice() {
 const car = document.getElementById('car').value;
